@@ -1,0 +1,9 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/fpmi-hci-2026/hci-10-backend-api-group-1.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/fpmi-hci-2026/hci-10-frontend-group-1.git
+[submodule "mobile"]
+	path = mobile
+	url = https://github.com/fpmi-hci-2026/hci-10-mobile-group-1.git
