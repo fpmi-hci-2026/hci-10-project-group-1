@@ -77,20 +77,7 @@ git submodule update --init --recursive
 ├── frontend/                    подмодуль → hci-10-frontend-group-1
 ├── mobile/                      подмодуль → hci-10-mobile-group-1
 │
-├── database/
-│   └── schema.sql               схема базы данных (PostgreSQL, 40 таблиц)
-│
 ├── docs/                        документация и отчёты (источник GitHub Pages)
-│   ├── index.md                 главная страница сайта проекта
-│   ├── README.md                указатель отчётов по лабораторным работам
-│   ├── REPO-SETUP.md            регламент оформления репозитория, вики и Pages
-│   ├── ЛабРабота1_ПЧМИ.docx     отчёт по ЛР№1
-│   ├── ЛабРабота2_ПЧМИ.pdf      отчёт по ЛР№2
-│   └── lab3/
-│       ├── README.md            отчёт по ЛР№3 — один файл, задания 1–8
-│       └── diagrams/            исходники .puml и отрисованные изображения
-│
-└── wiki/                        текст страниц вики проекта
 ```
 
 ## Contributing
