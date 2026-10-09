@@ -1,0 +1,31 @@
+title: МаркетШоп.by
+description: >-
+  Маркетплейс одежды и обуви с автоматической генерацией описаний товаров.
+  Учебный проект по курсу «Проектирование человеко-машинных интерфейсов», БГУ ФПМИ.
+lang: ru
+
+theme: jekyll-theme-cayman
+
+show_downloads: false
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+
+include:
+  - lab3/diagrams/img
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  hard_wrap: false
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+
+relative_links:
+  enabled: true
+  collections: false
