@@ -1,0 +1,152 @@
+@startuml 05-es-big-picture
+' Задание 5. Event Storming. Уровень 1: Big Picture
+title Event Storming — Big Picture: события предметной области «МаркетШоп.by»
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BorderColor #8A6A3A
+  FontSize 12
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<pivotal>> #FF8C42
+  BackgroundColor<<hotspot>> #E05C5C
+  BackgroundColor<<external>> #F2A9B8
+  FontColor<<hotspot>> #FFFFFF
+}
+skinparam package {
+  BackgroundColor #FBFAF7
+  BorderColor #BBBBBB
+  FontStyle bold
+}
+
+legend top left
+  <b>Нотация Event Storming</b>
+  |<back:#FFB366>   </back>| событие предметной области (глагол в прошедшем времени) |
+  |<back:#FF8C42>   </back>| опорное (pivotal) событие — граница фазы |
+  |<back:#E05C5C>   </back>| противоречие (hotspot) — требует решения |
+  |<back:#F2A9B8>   </back>| событие внешней системы |
+endlegend
+
+package "Фаза 1. Наполнение каталога" {
+  rectangle "Продавец\nзарегистрирован" <<event>> as e01
+  rectangle "Товар\nзагружен" <<event>> as e02
+  rectangle "Атрибуты товара\nзаполнены" <<event>> as e03
+  rectangle "Неполнота атрибутов\nобнаружена" <<event>> as e04
+  rectangle "Черновик описания\nсформирован" <<pivotal>> as e05
+  rectangle "Уровень уверенности\nрассчитан" <<event>> as e06
+  rectangle "Запрещённая формулировка\nобнаружена" <<event>> as e07
+  rectangle "Описание\nзаблокировано" <<event>> as e08
+  rectangle "Описание\nотредактировано продавцом" <<event>> as e09
+  rectangle "Карточка отправлена\nна модерацию" <<event>> as e10
+}
+
+package "Фаза 2. Модерация и публикация" {
+  rectangle "Задача модерации\nсоздана" <<event>> as e11
+  rectangle "Задача\nвзята в работу" <<event>> as e12
+  rectangle "Карточка\nодобрена" <<pivotal>> as e13
+  rectangle "Карточка возвращена\nпродавцу" <<event>> as e14
+  rectangle "Нарушение продавца\nзафиксировано" <<event>> as e15
+  rectangle "Описание\nопубликовано" <<pivotal>> as e16
+  rectangle "Товар\nпроиндексирован" <<event>> as e17
+}
+
+package "Фаза 3. Поиск и подбор" {
+  rectangle "Покупатель\nавторизован" <<event>> as e18
+  rectangle "Лента рекомендаций\nсформирована" <<event>> as e19
+  rectangle "Карточка товара\nпросмотрена" <<event>> as e20
+  rectangle "Параметры размера\nуказаны" <<event>> as e21
+  rectangle "Размер\nрекомендован" <<event>> as e22
+  rectangle "Данных о посадке\nнедостаточно" <<hotspot>> as e23
+  rectangle "Товар добавлен\nв избранное" <<event>> as e24
+  rectangle "Товар добавлен\nв корзину" <<event>> as e25
+}
+
+package "Фаза 4. Заказ и доставка" {
+  rectangle "Остаток\nзарезервирован" <<event>> as e26
+  rectangle "Заказ\nсоздан" <<pivotal>> as e27
+  rectangle "Платёж\nпроведён" <<external>> as e28
+  rectangle "Платёж\nотклонён" <<external>> as e29
+  rectangle "Резерв\nснят" <<event>> as e30
+  rectangle "Заказ передан\nв доставку" <<event>> as e31
+  rectangle "Заказ\nвыдан" <<pivotal>> as e32
+  rectangle "Срок возврата\nзапущен" <<event>> as e33
+}
+
+package "Фаза 5. После покупки" {
+  rectangle "Отзыв\nоставлен" <<event>> as e34
+  rectangle "Оценка посадки\nучтена" <<event>> as e35
+  rectangle "Заявка на возврат\nсоздана" <<pivotal>> as e36
+  rectangle "Срок возврата\nистёк" <<event>> as e37
+  rectangle "Товар сдан\nв пункт приёма" <<event>> as e38
+  rectangle "Заявка\nодобрена" <<event>> as e39
+  rectangle "Заявка\nотклонена продавцом" <<event>> as e40
+  rectangle "Спор\nразрешён администратором" <<event>> as e41
+  rectangle "Средства\nвозвращены" <<external>> as e42
+  rectangle "Заказ на замену\nсоздан" <<event>> as e43
+  rectangle "Кто отвечает за\nкачество описания —\nпродавец или площадка?" <<hotspot>> as h01
+  rectangle "Что считать\n«существенной правкой»\nописания?" <<hotspot>> as h02
+}
+
+e01 -> e02
+e02 -> e03
+e03 -> e04
+e03 -> e05
+e04 -[#999]-> e03 : дозаполнение
+e05 -> e06
+e06 -> e07
+e07 -> e08
+e08 -> e09
+e09 -> e10
+e06 -> e10
+
+e10 -> e11
+e11 -> e12
+e12 -> e13
+e12 -> e14
+e14 -> e15
+e13 -> e16
+e16 -> e17
+
+e17 -> e19
+e18 -> e19
+e19 -> e20
+e20 -> e21
+e21 -> e22
+e22 -[#E05C5C]-> e23
+e20 -> e24
+e22 -> e25
+
+e25 -> e26
+e26 -> e27
+e27 -> e28
+e27 -> e29
+e29 -> e30
+e28 -> e31
+e31 -> e32
+e32 -> e33
+
+e32 -> e34
+e34 -> e35
+e35 -[#999]-> e22 : уточняет рекомендацию
+e33 -> e36
+e33 -> e37
+e36 -> e38
+e38 -> e39
+e38 -> e40
+e40 -> e41
+e41 -> e39
+e39 -> e42
+e39 -> e43
+e36 .[#E05C5C]. h01
+e09 .[#E05C5C]. h02
+
+note bottom of e23
+  Противоречие выявлено на основании
+  данных опроса: 28,3% респондентов
+  не покупают из-за невозможности
+  примерить, но у новой модели
+  ещё нет отзывов о посадке
+end note
+
+@enduml

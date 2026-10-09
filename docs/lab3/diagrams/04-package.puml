@@ -1,0 +1,89 @@
+@startuml 04-package
+title Диаграмма пакетов серверной части
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle folder
+
+package "by.marketshop" {
+
+  package "interfaces" as IF {
+    package "rest" as IFR
+    package "events" as IFE
+    package "admin" as IFA
+  }
+
+  package "application" as APP {
+    package "catalog" as APPC
+    package "description" as APPD
+    package "recommendation" as APPR
+    package "order" as APPO
+    package "moderation" as APPM
+    package "returns" as APPRET
+  }
+
+  package "domain" as DOM {
+    package "catalog" as DOMC
+    package "description" as DOMD
+    package "customer" as DOMCU
+    package "order" as DOMO
+    package "moderation" as DOMM
+    package "shared" as DOMS
+  }
+
+  package "infrastructure" as INF {
+    package "persistence" as INFP
+    package "llm" as INFL
+    package "payment" as INFPAY
+    package "delivery" as INFDEL
+    package "search" as INFS
+    package "messaging" as INFMSG
+    package "storage" as INFST
+  }
+
+  package "config" as CFG
+}
+
+IF ..> APP : вызывает сценарии
+APP ..> DOM : оперирует сущностями
+APP ..> INF : через порты (интерфейсы)
+INF ..> DOM : реализует репозитории
+CFG ..> IF
+CFG ..> APP
+CFG ..> INF
+
+IFR ..> APPC
+IFR ..> APPD
+IFR ..> APPO
+IFA ..> APPM
+IFE ..> APPR
+
+APPD ..> DOMD
+APPC ..> DOMC
+APPO ..> DOMO
+APPM ..> DOMM
+APPR ..> DOMCU
+
+INFP ..> DOMS
+INFL ..> DOMD
+INFPAY ..> DOMO
+INFDEL ..> DOMO
+INFS ..> DOMC
+INFMSG ..> DOMS
+INFST ..> DOMS
+
+note right of DOM
+  Доменный слой не зависит
+  ни от инфраструктуры, ни от
+  интерфейсов: зависимости
+  направлены внутрь
+  (принцип чистой архитектуры)
+end note
+
+note bottom of INFL
+  Пакет llm изолирует работу с
+  внешним провайдером: замена
+  модели не затрагивает
+  доменный слой
+end note
+
+@enduml

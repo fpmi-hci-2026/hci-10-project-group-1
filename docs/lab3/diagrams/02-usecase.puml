@@ -1,0 +1,108 @@
+@startuml 02-usecase
+' Задание 2. Диаграмма вариантов использования (общая)
+' Проект: МаркетШоп.by — маркетплейс одежды и обуви с автогенерацией описаний
+
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F7F6F3
+  BorderColor #22304A
+  ArrowColor #22304A
+}
+
+actor "Покупатель" as Buyer
+actor "Продавец" as Seller
+actor "Администратор-\nмодератор" as Admin
+actor "Система генерации\nописаний" as Gen <<system>>
+actor "Платёжный шлюз\n(ЕРИП, эквайринг)" as Pay <<external>>
+actor "Служба доставки" as Delivery <<external>>
+
+rectangle "МаркетШоп.by" {
+
+  package "Подбор и покупка" {
+    usecase "UC-01\nПросмотреть персонализированную\nленту рекомендаций" as UC01
+    usecase "UC-02\nНайти товар\n(каталог, поиск, фото)" as UC02
+    usecase "UC-03\nПросмотреть карточку товара" as UC03
+    usecase "UC-04\nПодобрать размер" as UC04
+    usecase "UC-05\nОформить заказ" as UC05
+    usecase "UC-06\nОплатить заказ" as UC06
+    usecase "UC-07\nОтследить доставку" as UC07
+    usecase "UC-08\nОформить возврат или обмен" as UC08
+    usecase "UC-09\nОставить отзыв\nс оценкой посадки" as UC09
+  }
+
+  package "Публикация товара" {
+    usecase "UC-10\nЗагрузить товар\nи заполнить атрибуты" as UC10
+    usecase "UC-11\nСформировать черновик\nописания" as UC11
+    usecase "UC-12\nПроверить полноту\nатрибутов" as UC12
+    usecase "UC-13\nОтредактировать описание" as UC13
+    usecase "UC-14\nОтправить карточку\nна модерацию" as UC14
+    usecase "UC-15\nОбработать заявку\nна возврат" as UC15
+  }
+
+  package "Модерация и правила" {
+    usecase "UC-16\nПроверить карточку\nв очереди модерации" as UC16
+    usecase "UC-17\nЗаблокировать запрещённые\nформулировки" as UC17
+    usecase "UC-18\nНастроить правила\nгенерации" as UC18
+    usecase "UC-19\nКонтролировать повторные\nнарушения продавца" as UC19
+  }
+
+  usecase "UC-20\nАвторизоваться" as UC20
+}
+
+Buyer --> UC01
+Buyer --> UC02
+Buyer --> UC03
+Buyer --> UC04
+Buyer --> UC05
+Buyer --> UC07
+Buyer --> UC08
+Buyer --> UC09
+Buyer --> UC20
+
+Seller --> UC10
+Seller --> UC13
+Seller --> UC14
+Seller --> UC15
+Seller --> UC20
+
+Admin --> UC16
+Admin --> UC18
+Admin --> UC19
+Admin --> UC15
+
+Gen --> UC11
+Gen --> UC12
+Gen --> UC17
+
+UC05 ..> UC06 : <<include>>
+UC06 --> Pay
+UC05 --> Delivery
+UC07 --> Delivery
+UC03 ..> UC04 : <<extend>>
+UC01 ..> UC03 : <<include>>
+UC02 ..> UC03 : <<include>>
+UC10 ..> UC12 : <<include>>
+UC12 <.. UC11 : <<include>>
+UC14 ..> UC17 : <<include>>
+UC16 ..> UC17 : <<include>>
+UC08 ..> UC15 : <<include>>
+UC17 ..> UC19 : <<extend>>
+
+note right of UC11
+  Черновик формируется только
+  при полном наборе обязательных
+  атрибутов (US-05, US-06)
+end note
+
+note bottom of UC17
+  Блокировка неподтверждённых
+  заявлений о качестве (US-09),
+  требование анти-персонажа
+  «Бот-перекупщик»
+end note
+
+@enduml

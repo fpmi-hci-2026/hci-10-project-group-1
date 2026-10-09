@@ -1,0 +1,74 @@
+@startuml 04-ord
+title Диаграмма объектно-реляционного отображения (ORD) для домена «Описание товара»
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Доменная модель (by.marketshop.domain.description)" <<Rectangle>> {
+  class ОписаниеТовара <<entity>> {
+    - id: UUID
+    - товарId: UUID
+    - статус: СтатусМодерации
+    - уверенность: УровеньУверенности
+    - версии: List<ВерсияОписания>
+  }
+  class ВерсияОписания <<value object>> {
+    - номер: int
+    - тип: ТипВерсии
+    - текст: String
+    - авторПравки: String
+  }
+  class ОценкаДостоверности <<value object>> {
+    - утверждение: String
+    - атрибутИсточник: String
+    - подтверждено: boolean
+  }
+}
+
+package "Реляционная схема (PostgreSQL)" <<Rectangle>> {
+  entity "description" as T1 {
+    id : uuid <<PK>>
+    product_id : uuid <<FK, UQ>>
+    status : moderation_status_enum
+    confidence : confidence_enum
+    block_reason : text
+  }
+  entity "description_version" as T2 {
+    id : uuid <<PK>>
+    description_id : uuid <<FK>>
+    number : smallint
+    kind : version_kind_enum
+    body : text
+    author : varchar(64)
+  }
+  entity "description_claim" as T3 {
+    id : uuid <<PK>>
+    description_id : uuid <<FK>>
+    statement : text
+    source_attribute : varchar(64)
+    verified : boolean
+  }
+}
+
+ОписаниеТовара ..> T1 : <<maps to>>\nстратегия: таблица на класс
+ВерсияОписания ..> T2 : <<maps to>>\nколлекция значений →\nотдельная таблица
+ОценкаДостоверности ..> T3 : <<maps to>>\nколлекция значений →\nотдельная таблица
+
+ОписаниеТовара *-- ВерсияОписания
+ОписаниеТовара *-- ОценкаДостоверности
+T1 ||--|{ T2
+T1 ||--o{ T3
+
+note bottom of T2
+  Правила отображения:
+  • перечисления домена → ENUM-типы PostgreSQL;
+  • композиция → FK с ON DELETE CASCADE;
+  • объект-значение не имеет
+    самостоятельного идентификатора в домене,
+    суррогатный id вводится только на уровне БД;
+  • загрузка версий — ленивая (LAZY),
+    чтобы список карточек не тянул тексты
+end note
+
+@enduml

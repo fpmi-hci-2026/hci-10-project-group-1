@@ -1,0 +1,95 @@
+@startuml 04-seq-return
+title Диаграмма последовательности 5. Оформление возврата или обмена (US-11)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+autonumber
+
+actor "Покупатель" as U
+participant "Мобильное\nприложение" as App
+participant "API Gateway" as API
+participant "Сервис\nвозвратов" as Ret
+participant "Сервис\nзаказов" as Ord
+participant "Хранилище\nфайлов (S3)" as S3
+participant "Сервис\nуведомлений" as Notif
+actor "Продавец" as S
+actor "Администратор" as M
+
+U -> App : Открыть «Мои заказы»
+activate App
+App -> API : GET /api/v1/orders
+API --> App : Список заказов с признаком\n«возврат доступен»
+App --> U : Кнопка «Оформить возврат или обмен»
+
+U -> App : Выбрать заказ и действие
+App -> API : GET /api/v1/orders/{id}/return-options
+activate API
+API -> Ret : getOptions(orderId)
+activate Ret
+Ret -> Ord : getOrder(orderId)
+activate Ord
+Ord --> Ret : заказ + срокВозвратаДо
+deactivate Ord
+alt Срок возврата истёк
+  Ret --> API : 422 ReturnPeriodExpired
+  API --> App : Причина отказа + ссылка на правила
+  App --> U : Объяснение, почему возврат недоступен
+else Срок не истёк
+  Ret --> API : Список причин + правила по фото
+  deactivate Ret
+  API --> App : Экран выбора причины
+  deactivate API
+  App --> U : Список причин возврата
+
+  U -> App : Выбрать причину\n«Товар не соответствует описанию»
+  App --> U : Запросить фотографии\n(обязательны для этой причины)
+  U -> App : Прикрепить 2 фотографии
+  App -> S3 : PUT фото (presigned URL)
+  activate S3
+  S3 --> App : ссылки на файлы
+  deactivate S3
+
+  App -> API : POST /api/v1/returns
+  activate API
+  API -> Ret : createRequest(orderId, причина, фото)
+  activate Ret
+  Ret -> Ret : Присвоить код причины\nдля отчётности
+  Ret -> Ord : markReturnRequested(orderId)
+  Ret -> Notif : notifySeller(продавецId, 'return_requested')
+  Notif -> S : Уведомление в кабинете
+  Ret --> API : 201 Created + пункт приёма + срок сдачи
+  deactivate Ret
+  API --> App : Заявка создана
+  deactivate API
+  App --> U : Адрес пункта приёма и срок сдачи
+  deactivate App
+
+  S -> API : Осмотреть товар и принять решение
+  activate API
+  API -> Ret : sellerDecision(requestId, решение)
+  activate Ret
+  alt Продавец отклонил заявку
+    Ret -> Notif : notifyAdmin('return_dispute')
+    Notif -> M : Спор в очереди
+    M -> API : Решение в пользу покупателя
+    API -> Ret : adminOverride(requestId, 'approved')
+  end
+  Ret -> Ret : Перевести заявку\nв статус «Одобрена»
+  alt Тип обращения — возврат
+    Ret -> Ord : refund(orderId, сумма)
+  else Тип обращения — обмен
+    Ret -> Ord : createReplacementOrder(orderId)
+  end
+  Ret -> Notif : push покупателю о смене статуса
+  Notif -> U : Push-уведомление
+  Ret --> API : 200 OK
+  deactivate Ret
+  deactivate API
+end
+
+note over Ret, Notif
+  Целевой показатель: не менее 80% заявок
+  оформляются без обращения в поддержку
+  (US-11, AC-11.7)
+end note
+
+@enduml

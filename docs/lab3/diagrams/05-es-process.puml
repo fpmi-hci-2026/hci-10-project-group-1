@@ -1,0 +1,156 @@
+@startuml 05-es-process
+' Задание 5. Event Storming. Уровень 2: Process Modeling
+title Event Storming — Process Modeling: публикация товара с автогенерацией описания
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  FontSize 12
+  BorderColor #7A6A4A
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<command>> #6DB3F2
+  BackgroundColor<<actor>> #FFE066
+  BackgroundColor<<policy>> #C9A0DC
+  BackgroundColor<<read>> #A8D5A2
+  BackgroundColor<<external>> #F2A9B8
+  BackgroundColor<<hotspot>> #E05C5C
+  FontColor<<hotspot>> #FFFFFF
+}
+skinparam package {
+  BackgroundColor #FCFBF8
+  BorderColor #CCCCCC
+  FontStyle bold
+}
+
+legend top left
+  |<back:#FFE066>   </back>| действующее лицо (роль) |
+  |<back:#6DB3F2>   </back>| команда (повелительное наклонение) |
+  |<back:#FFB366>   </back>| событие предметной области |
+  |<back:#C9A0DC>   </back>| политика / автоматизированное правило |
+  |<back:#A8D5A2>   </back>| представление (read model) |
+  |<back:#F2A9B8>   </back>| внешняя система |
+  |<back:#E05C5C>   </back>| противоречие |
+endlegend
+
+package "Шаг 1. Загрузка товара" {
+  rectangle "Продавец\n(Виктор)" <<actor>> as a1
+  rectangle "Загрузить товар" <<command>> as c1
+  rectangle "Товар\nзагружен" <<event>> as v1
+  rectangle "Форма загрузки\nтовара" <<read>> as r1
+}
+
+package "Шаг 2. Проверка полноты атрибутов" {
+  rectangle "Когда товар загружен —\nпроверить полноту атрибутов" <<policy>> as p1
+  rectangle "Проверить\nполноту атрибутов" <<command>> as c2
+  rectangle "Атрибуты\nпроверены" <<event>> as v2
+  rectangle "Неполнота атрибутов\nобнаружена" <<event>> as v3
+  rectangle "Список недостающих\nполей" <<read>> as r2
+  rectangle "Дозаполнить\nатрибуты" <<command>> as c3
+}
+
+package "Шаг 3. Генерация описания" {
+  rectangle "Когда атрибуты полны —\nсформировать черновик" <<policy>> as p2
+  rectangle "Сформировать\nчерновик описания" <<command>> as c4
+  rectangle "LLM-провайдер" <<external>> as x1
+  rectangle "Черновик описания\nсформирован" <<event>> as v4
+  rectangle "Уровень уверенности\nрассчитан" <<event>> as v5
+  rectangle "Краткая версия\nсформирована" <<event>> as v6
+}
+
+package "Шаг 4. Проверка формулировок" {
+  rectangle "Когда черновик сформирован —\nпроверить текст по правилам" <<policy>> as p3
+  rectangle "Проверить\nформулировки" <<command>> as c5
+  rectangle "Запрещённая формулировка\nобнаружена" <<event>> as v7
+  rectangle "Описание\nзаблокировано" <<event>> as v8
+  rectangle "Текст признан\nдопустимым" <<event>> as v9
+  rectangle "Редактор описания\nс подсветкой" <<read>> as r3
+  rectangle "Отредактировать\nописание" <<command>> as c6
+  rectangle "Описание\nотредактировано" <<event>> as v10
+}
+
+package "Шаг 5. Модерация" {
+  rectangle "Отправить\nна модерацию" <<command>> as c7
+  rectangle "Карточка отправлена\nна модерацию" <<event>> as v11
+  rectangle "Когда карточка отправлена —\nсоздать задачу модерации" <<policy>> as p4
+  rectangle "Очередь модерации,\nотсортированная\nпо уверенности" <<read>> as r4
+  rectangle "Администратор-\nмодератор (Марина)" <<actor>> as a2
+  rectangle "Одобрить\nкарточку" <<command>> as c8
+  rectangle "Вернуть\nпродавцу" <<command>> as c9
+  rectangle "Карточка\nодобрена" <<event>> as v12
+  rectangle "Карточка\nвозвращена" <<event>> as v13
+}
+
+package "Шаг 6. Публикация" {
+  rectangle "Когда карточка одобрена —\nопубликовать описание" <<policy>> as p5
+  rectangle "Опубликовать\nописание" <<command>> as c10
+  rectangle "Описание\nопубликовано" <<event>> as v14
+  rectangle "Когда описание опубликовано —\nпроиндексировать товар" <<policy>> as p6
+  rectangle "Поисковый индекс\n(OpenSearch)" <<external>> as x2
+  rectangle "Товар\nпроиндексирован" <<event>> as v15
+  rectangle "Карточка товара\nдля покупателя" <<read>> as r5
+}
+
+rectangle "Нужно ли показывать\nпокупателю, что описание\nсоздано автоматически?" <<hotspot>> as h1
+
+a1 --> c1
+r1 ..> a1 : <<view>>
+c1 --> v1
+v1 --> p1
+p1 --> c2
+c2 --> v2
+c2 --> v3
+v3 --> r2
+r2 ..> a1
+a1 --> c3
+c3 --> v2
+v2 --> p2
+p2 --> c4
+c4 --> x1
+x1 --> v4
+v4 --> v5
+v4 --> v6
+v4 --> p3
+p3 --> c5
+c5 --> v7
+c5 --> v9
+v7 --> v8
+v8 --> r3
+r3 ..> a1
+a1 --> c6
+c6 --> v10
+v10 --> p3
+v9 --> c7
+a1 --> c7
+c7 --> v11
+v11 --> p4
+p4 --> r4
+r4 ..> a2
+a2 --> c8
+a2 --> c9
+c8 --> v12
+c9 --> v13
+v12 --> p5
+p5 --> c10
+c10 --> v14
+v14 --> p6
+p6 --> x2
+x2 --> v15
+v15 --> r5
+v14 .[#E05C5C]. h1
+
+note right of p3
+  Политика применяется повторно
+  после каждой правки продавца:
+  выйти из цикла, не исправив
+  текст, невозможно (US-09)
+end note
+
+note bottom of h1
+  Противоречие разрешено в пользу
+  покупателя: термины генерации
+  в его интерфейсе не показываются
+  (ограничение проекта, ЛР№2)
+end note
+
+@enduml

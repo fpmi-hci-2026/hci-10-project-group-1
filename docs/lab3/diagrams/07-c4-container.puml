@@ -1,0 +1,86 @@
+@startuml 07-c4-container
+' Задание 7. C4 Model. Уровень 2: Контейнеры
+!include <C4/C4_Container>
+
+title Модель C4, уровень 2 — Контейнеры системы «МаркетШоп.by»
+
+Person(buyer, "Покупатель")
+Person(seller, "Продавец")
+Person(admin, "Администратор-модератор")
+
+System_Boundary(ms, "МаркетШоп.by") {
+  Container(mobile, "Мобильное приложение", "Kotlin / Swift", "Каталог, лента рекомендаций, ассистент по размеру, заказы и возвраты; офлайн-кэш корзины")
+  Container(spa, "Веб-приложение", "React, TypeScript", "Витрина, кабинет продавца и админ-панель модератора")
+  Container(gw, "API Gateway", "Kotlin, Spring Cloud Gateway", "Маршрутизация, ограничение частоты запросов, терминирование TLS")
+  Container(auth, "Сервис аутентификации", "Kotlin, Spring", "Выпуск и проверка токенов, биометрический вход")
+
+  Container(catalog, "Сервис каталога", "Kotlin, Spring", "Товары, варианты, категории, остатки, индексация")
+  Container(descr, "Сервис описаний", "Kotlin, Spring", "Описания, версии, статусы модерации, правила генерации")
+  Container(gen, "Сервис генерации описаний", "Python, FastAPI", "Оркестрация генерации, расчёт уверенности, проверка формулировок")
+  Container(rec, "Сервис рекомендаций", "Python, FastAPI", "Персонализированная лента, похожие товары")
+  Container(size, "Ассистент по размеру", "Kotlin, Spring", "Рекомендация размера по параметрам и отзывам")
+  Container(orders, "Сервис заказов", "Kotlin, Spring", "Корзина, заказ, резервирование остатков, платежи, доставка")
+  Container(returns, "Сервис возвратов", "Kotlin, Spring", "Заявки на возврат и обмен, правила возврата")
+  Container(mod, "Сервис модерации", "Kotlin, Spring", "Очередь, захват задач, решения, рейтинг качества")
+  Container(reviews, "Сервис отзывов", "Kotlin, Spring", "Отзывы, агрегаты оценок посадки")
+  Container(notif, "Сервис уведомлений", "Kotlin, Spring", "Push, e-mail, уведомления в кабинетах")
+
+  ContainerDb(pg, "Основная БД", "PostgreSQL 16", "Товары, описания, заказы, возвраты, модерация, отзывы")
+  ContainerDb(redis, "Кэш", "Redis 7", "Ленты рекомендаций, сессии")
+  ContainerDb(search, "Поисковый индекс", "OpenSearch", "Полнотекстовый поиск по описаниям и атрибутам")
+  ContainerQueue(bus, "Шина событий", "Kafka", "Доменные события между контекстами")
+  ContainerDb(s3, "Объектное хранилище", "S3-совместимое", "Фотографии товаров, отзывов и заявок на возврат")
+}
+
+System_Ext(llm, "LLM-провайдер")
+System_Ext(pay, "ЕРИП и банк-эквайер")
+System_Ext(del, "Службы доставки")
+
+Rel(buyer, mobile, "Пользуется", "HTTPS")
+Rel(buyer, spa, "Пользуется", "HTTPS")
+Rel(seller, spa, "Работает в кабинете продавца", "HTTPS")
+Rel(admin, spa, "Работает в админ-панели", "HTTPS")
+
+Rel(mobile, gw, "Вызывает API", "HTTPS/JSON")
+Rel(spa, gw, "Вызывает API", "HTTPS/JSON")
+Rel(gw, auth, "Проверяет токен", "gRPC")
+
+Rel(gw, catalog, "REST")
+Rel(gw, descr, "REST")
+Rel(gw, rec, "REST")
+Rel(gw, size, "REST")
+Rel(gw, orders, "REST")
+Rel(gw, returns, "REST")
+Rel(gw, mod, "REST")
+Rel(gw, reviews, "REST")
+
+Rel(catalog, gen, "Запрашивает генерацию после проверки атрибутов", "REST")
+Rel(gen, llm, "Запрашивает черновик текста", "HTTPS, таймаут 20 с")
+Rel(gen, descr, "Сохраняет версии описания", "REST")
+Rel(size, reviews, "Запрашивает статистику посадки", "REST")
+Rel(size, catalog, "Запрашивает размерную сетку и наличие", "REST")
+Rel(orders, pay, "Проводит платёж", "HTTPS")
+Rel(orders, del, "Создаёт отправление", "HTTPS")
+Rel(returns, orders, "Инициирует возврат средств", "REST")
+
+Rel(descr, bus, "Публикует события", "Kafka")
+Rel(mod, bus, "Публикует события", "Kafka")
+Rel(orders, bus, "Публикует события", "Kafka")
+Rel(returns, bus, "Публикует события", "Kafka")
+Rel(bus, rec, "Доставляет события", "Kafka")
+Rel(bus, notif, "Доставляет события", "Kafka")
+Rel(bus, search, "Переиндексация", "Kafka Connect")
+
+Rel(catalog, pg, "Читает и пишет", "JDBC")
+Rel(descr, pg, "Читает и пишет", "JDBC")
+Rel(orders, pg, "Читает и пишет", "JDBC")
+Rel(returns, pg, "Читает и пишет", "JDBC")
+Rel(mod, pg, "Читает и пишет", "JDBC")
+Rel(reviews, pg, "Читает и пишет", "JDBC")
+Rel(rec, redis, "Кэширует ленты", "RESP")
+Rel(catalog, search, "Индексирует товары", "HTTP")
+Rel(catalog, s3, "Хранит фотографии", "S3 API")
+Rel(returns, s3, "Хранит фотографии к заявкам", "S3 API")
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,109 @@
+@startuml 04-deployment
+title Диаграмма развёртывания системы МаркетШоп.by
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+node "Смартфон покупателя" as Phone {
+  artifact "Мобильное приложение\n(Android / iOS)" as MobApp
+  artifact "Локальный кэш\n(SQLite)" as LocalCache
+}
+
+node "Рабочая станция\nпродавца / модератора" as Desktop {
+  artifact "Браузер" as Browser
+  artifact "SPA-бандл\n(React)" as SPA
+}
+
+cloud "CDN" as CDN {
+  artifact "Статика и изображения\nтоваров" as Static
+}
+
+node "Кластер Kubernetes\n(дата-центр, Республика Беларусь)" as K8s {
+
+  node "Ingress / API Gateway" as Ingress {
+    artifact "nginx-ingress" as Nginx
+    artifact "api-gateway" as GW
+  }
+
+  node "Пул прикладных сервисов" as Pods {
+    artifact "catalog-service" as SvcCat
+    artifact "description-service" as SvcDesc
+    artifact "generation-service" as SvcGen
+    artifact "recommendation-service" as SvcRec
+    artifact "order-service" as SvcOrd
+    artifact "moderation-service" as SvcMod
+    artifact "returns-service" as SvcRet
+    artifact "notification-service" as SvcNotif
+  }
+
+  node "Узел данных" as DataNode {
+    database "PostgreSQL 16\n(primary + replica)" as PG
+    database "Redis 7" as Redis
+    database "OpenSearch" as OS
+    queue "Kafka" as Kafka
+  }
+
+  node "Объектное хранилище" as Storage {
+    artifact "S3-совместимое\nхранилище (MinIO)" as S3
+  }
+}
+
+cloud "Внешние сервисы" as Ext {
+  node "LLM-провайдер" as LLM
+  node "ЕРИП" as ERIP
+  node "Банк-эквайер" as Bank
+  node "API служб доставки" as Delivery
+  node "FCM / APNs" as PushSvc
+}
+
+MobApp --> Nginx : HTTPS / TLS 1.3
+MobApp --> CDN : HTTPS (изображения)
+MobApp ..> LocalCache : офлайн-кэш корзины\nи просмотренных товаров
+Browser --> Nginx : HTTPS
+Browser --> CDN : HTTPS
+Browser ..> SPA
+
+Nginx --> GW
+GW --> SvcCat
+GW --> SvcDesc
+GW --> SvcRec
+GW --> SvcOrd
+GW --> SvcMod
+GW --> SvcRet
+
+SvcCat --> PG : JDBC
+SvcDesc --> PG
+SvcOrd --> PG
+SvcMod --> PG
+SvcRet --> PG
+SvcRec --> Redis
+SvcCat --> OS
+SvcDesc --> Kafka
+SvcOrd --> Kafka
+SvcRet --> Kafka
+Kafka --> SvcRec
+Kafka --> SvcNotif
+
+SvcGen --> LLM : HTTPS, таймаут 20 с
+SvcOrd --> ERIP : HTTPS
+SvcOrd --> Bank : HTTPS, 3-D Secure
+SvcOrd --> Delivery : HTTPS
+SvcNotif --> PushSvc : HTTPS
+SvcCat --> S3
+SvcRet --> S3
+S3 --> CDN : раздача изображений
+
+note right of DataNode
+  Персональные данные покупателей
+  размещаются на территории
+  Республики Беларусь — требование
+  законодательства о защите
+  персональных данных
+end note
+
+note bottom of SvcGen
+  Единственный компонент, обращающийся
+  к внешнему LLM-провайдеру: упрощает
+  контроль затрат и замену модели
+end note
+
+@enduml

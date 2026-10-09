@@ -1,0 +1,99 @@
+@startuml 04-seq-checkout
+title Диаграмма последовательности 4. Оформление и оплата заказа (US-05 … US-12)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+autonumber
+
+actor "Покупатель" as U
+participant "Мобильное\nприложение" as App
+participant "API Gateway" as API
+participant "Сервис\nзаказов" as Ord
+participant "Сервис\nкаталога" as Cat
+participant "Сервис\nправил возврата" as Ret
+participant "Сервис\nплатежей" as Payc
+participant "Платёжный шлюз" as PSP
+participant "Служба\nдоставки" as Del
+database "БД" as DB
+
+U -> App : Перейти к оформлению заказа
+activate App
+App -> API : GET /api/v1/checkout
+activate API
+API -> Ord : prepareCheckout(cartId)
+activate Ord
+Ord -> Ret : getReturnTerms(позиции)
+activate Ret
+Ret --> Ord : срок возврата 14 дней
+deactivate Ret
+Ord -> Del : getPickupPoints(городId)
+activate Del
+Del --> Ord : список пунктов самовывоза
+deactivate Del
+Ord --> API : Итого, пункты, способы оплаты,\nсрок возврата
+deactivate Ord
+API --> App : 200 OK
+deactivate API
+App --> U : Пункт самовывоза — по умолчанию,\nкарта онлайн — первый способ оплаты
+
+U -> App : Подтвердить заказ
+App -> API : POST /api/v1/orders
+activate API
+API -> Ord : createOrder(dto)
+activate Ord
+
+Ord -> Cat : reserveStock(позиции)
+activate Cat
+alt Остатка не хватает
+  Cat --> Ord : 409 OutOfStock(вариантId)
+  Ord --> API : 409 Conflict
+  API --> App : Товар закончился
+  App --> U : Показать сообщение\nи предложить похожие товары
+else Резерв успешен
+  Cat --> Ord : резерв подтверждён
+  deactivate Cat
+  Ord -> DB : INSERT заказ, позиции (статус=СОЗДАН)
+
+  alt Оплата картой онлайн
+    Ord -> Payc : initPayment(orderId, сумма)
+    activate Payc
+    Payc -> PSP : POST /payments
+    activate PSP
+    PSP --> Payc : paymentUrl / 3-D Secure
+    deactivate PSP
+    Payc --> Ord : ссылка на оплату
+    deactivate Payc
+    Ord --> API : 201 Created + paymentUrl
+    API --> App : Переход к оплате
+    App --> U : Форма оплаты / биометрия
+    U -> App : Подтвердить оплату
+    PSP -> Payc : webhook: payment.succeeded
+    activate Payc
+    Payc -> Ord : confirmPayment(orderId)
+    deactivate Payc
+    activate Ord
+    Ord -> DB : UPDATE заказ SET статус='ОПЛАЧЕН'
+  else Оплата при получении
+    Ord -> DB : UPDATE заказ SET способОплаты='ПРИ_ПОЛУЧЕНИИ'
+  end
+
+  Ord -> Del : createShipment(orderId, пунктВыдачи)
+  activate Del
+  Del --> Ord : трек-номер
+  deactivate Del
+  Ord -> DB : UPDATE заказ SET срокВозвратаДо = дата выдачи + 14
+  Ord --> API : 201 Created
+  deactivate Ord
+  API --> App : Заказ создан
+  deactivate API
+  App --> U : Номер заказа, трек-номер\nи срок возврата
+  deactivate App
+end
+
+note over Ord, Ret
+  Срок возврата фиксируется в заказе
+  в момент создания — последующее
+  изменение правил не ухудшает
+  условия для уже созданных заказов
+end note
+
+@enduml

@@ -1,0 +1,75 @@
+@startuml 04-seq-recommendations
+title Диаграмма последовательности 1. Формирование персонализированной ленты (US-01)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+autonumber
+
+actor "Покупатель" as U
+participant "Мобильное\nприложение" as App
+participant "API Gateway" as API
+participant "Сервис\nрекомендаций" as Rec
+participant "Сервис\nпрофиля" as Prof
+participant "Сервис\nкаталога" as Cat
+database "Кэш лент\n(Redis)" as Cache
+database "БД" as DB
+
+U -> App : Открыть главный экран
+activate App
+App -> API : GET /api/v1/feed
+activate API
+API -> Rec : buildFeed(userId, deviceId)
+activate Rec
+
+Rec -> Cache : get(feed:userId)
+alt Лента есть в кэше и не устарела
+  Cache --> Rec : список блоков
+else Кэш пуст или устарел
+  Rec -> Prof : getPreferences(userId)
+  activate Prof
+  Prof -> DB : SELECT профиль, параметры размера
+  DB --> Prof : предпочтения
+  Prof --> Rec : ПрофильПредпочтений
+  deactivate Prof
+
+  alt Данных для персонализации достаточно
+    Rec -> Cat : findByFilters(размер, категории, сезон)
+    activate Cat
+    Cat -> DB : SELECT товары WHERE status='ОПУБЛИКОВАНО'
+    DB --> Cat : товары + краткие summary
+    Cat --> Rec : список товаров
+    deactivate Cat
+    Rec -> Rec : Собрать блоки\n«Специально для вас»,\n«Похожие товары»
+  else Данных недостаточно (новый покупатель)
+    Rec -> Cat : popularInRegion(городId)
+    activate Cat
+    Cat --> Rec : популярные товары региона
+    deactivate Cat
+    Rec -> Rec : Добавить блок-подсказку\n«Расскажите о своих размерах»
+  end
+
+  Rec -> Cache : set(feed:userId, ttl=15 мин)
+end
+
+Rec --> API : Блоки ленты + summary (<= 90 символов)
+deactivate Rec
+API --> App : 200 OK
+deactivate API
+App --> U : Отрисовать ленту\n(первые карточки < 2 c)
+deactivate App
+
+U -> App : Добавить карточку в избранное
+activate App
+App -> API : POST /api/v1/favorites
+API -> Prof : addFavorite(userId, productId)
+Prof --> API : 204 No Content
+API --> App : 204
+App --> U : Отметить сердце без\nперезагрузки ленты
+deactivate App
+
+note over App, Cache
+  AC-01.6: добавление в избранное не
+  перестраивает ленту — позиции
+  остальных карточек сохраняются
+end note
+
+@enduml

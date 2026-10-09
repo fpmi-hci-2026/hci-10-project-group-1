@@ -1,0 +1,180 @@
+@startuml 05-es-software-design
+' Задание 5. Event Storming. Уровень 3: Software Design — агрегаты и ограниченные контексты
+title Event Storming — Software Design: агрегаты и ограниченные контексты
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  FontSize 11
+  BorderColor #7A6A4A
+  BackgroundColor<<command>> #6DB3F2
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<aggregate>> #FFE066
+  BackgroundColor<<policy>> #C9A0DC
+  BackgroundColor<<read>> #A8D5A2
+  BackgroundColor<<external>> #F2A9B8
+  FontStyle<<aggregate>> bold
+}
+skinparam package {
+  BackgroundColor #FBFAF7
+  BorderColor #22304A
+  BorderThickness 2
+  FontStyle bold
+  FontSize 13
+}
+
+legend top left
+  |<back:#6DB3F2>   </back>| команда |<back:#FFE066>   </back>| агрегат |<back:#FFB366>   </back>| событие |
+  |<back:#C9A0DC>   </back>| политика |<back:#A8D5A2>   </back>| представление |<back:#F2A9B8>   </back>| внешняя система |
+  Рамка пакета — ограниченный контекст (bounded context)
+endlegend
+
+package "Контекст «Каталог» (Catalog)" as BC1 {
+  rectangle "Загрузить товар" <<command>> as c11
+  rectangle "Зарезервировать\nостаток" <<command>> as c12
+  rectangle "<b>Товар</b>\n(Product)" <<aggregate>> as ag1
+  rectangle "Товар\nзагружен" <<event>> as e11
+  rectangle "Остаток\nзарезервирован" <<event>> as e12
+  rectangle "Атрибуты\nпроверены" <<event>> as e13
+  rectangle "Каталог\nс фильтрами" <<read>> as r11
+}
+
+package "Контекст «Описания» (Description)" as BC2 {
+  rectangle "Сформировать\nчерновик" <<command>> as c21
+  rectangle "Отредактировать\nописание" <<command>> as c22
+  rectangle "<b>Описание товара</b>\n(ProductDescription)" <<aggregate>> as ag2
+  rectangle "<b>Правило генерации</b>\n(GenerationRule)" <<aggregate>> as ag3
+  rectangle "Черновик\nсформирован" <<event>> as e21
+  rectangle "Описание\nзаблокировано" <<event>> as e22
+  rectangle "Описание\nопубликовано" <<event>> as e23
+  rectangle "LLM-провайдер" <<external>> as x21
+}
+
+package "Контекст «Модерация» (Moderation)" as BC3 {
+  rectangle "Взять задачу\nв работу" <<command>> as c31
+  rectangle "Одобрить / вернуть" <<command>> as c32
+  rectangle "<b>Задача модерации</b>\n(ModerationTask)" <<aggregate>> as ag4
+  rectangle "<b>Рейтинг продавца</b>\n(SellerQuality)" <<aggregate>> as ag5
+  rectangle "Карточка\nодобрена" <<event>> as e31
+  rectangle "Карточка\nвозвращена" <<event>> as e32
+  rectangle "Очередь\nмодерации" <<read>> as r31
+}
+
+package "Контекст «Персонализация» (Personalization)" as BC4 {
+  rectangle "Сформировать\nленту" <<command>> as c41
+  rectangle "Рекомендовать\nразмер" <<command>> as c42
+  rectangle "<b>Профиль покупателя</b>\n(CustomerProfile)" <<aggregate>> as ag6
+  rectangle "Лента\nсформирована" <<event>> as e41
+  rectangle "Размер\nрекомендован" <<event>> as e42
+  rectangle "Лента\nрекомендаций" <<read>> as r41
+  rectangle "Ассистент\nпо размеру" <<read>> as r42
+}
+
+package "Контекст «Заказы» (Ordering)" as BC5 {
+  rectangle "Создать заказ" <<command>> as c51
+  rectangle "Провести платёж" <<command>> as c52
+  rectangle "<b>Заказ</b>\n(Order)" <<aggregate>> as ag7
+  rectangle "Заказ\nсоздан" <<event>> as e51
+  rectangle "Заказ\nвыдан" <<event>> as e52
+  rectangle "Платёжный шлюз" <<external>> as x51
+  rectangle "Служба доставки" <<external>> as x52
+}
+
+package "Контекст «Возвраты» (Returns)" as BC6 {
+  rectangle "Создать заявку\nна возврат" <<command>> as c61
+  rectangle "Одобрить заявку" <<command>> as c62
+  rectangle "<b>Заявка на возврат</b>\n(ReturnRequest)" <<aggregate>> as ag8
+  rectangle "<b>Правила возврата</b>\n(ReturnPolicy)" <<aggregate>> as ag9
+  rectangle "Заявка\nсоздана" <<event>> as e61
+  rectangle "Средства\nвозвращены" <<event>> as e62
+  rectangle "Мои заказы\nи возвраты" <<read>> as r61
+}
+
+package "Контекст «Отзывы» (Reviews)" as BC7 {
+  rectangle "Оставить отзыв" <<command>> as c71
+  rectangle "<b>Отзыв</b>\n(Review)" <<aggregate>> as ag10
+  rectangle "Оценка посадки\nучтена" <<event>> as e71
+  rectangle "Статистика\nпосадки" <<read>> as r71
+}
+
+c11 --> ag1
+c12 --> ag1
+ag1 --> e11
+ag1 --> e12
+ag1 --> e13
+e11 --> r11
+
+c21 --> ag2
+c22 --> ag2
+ag2 --> e21
+ag2 --> e22
+ag2 --> e23
+ag3 --> e22
+ag2 --> x21
+
+c31 --> ag4
+c32 --> ag4
+ag4 --> e31
+ag4 --> e32
+e32 --> ag5
+ag4 --> r31
+
+c41 --> ag6
+c42 --> ag6
+ag6 --> e41
+ag6 --> e42
+e41 --> r41
+e42 --> r42
+
+c51 --> ag7
+c52 --> ag7
+ag7 --> e51
+ag7 --> e52
+ag7 --> x51
+ag7 --> x52
+
+c61 --> ag8
+c62 --> ag8
+ag8 --> e61
+ag8 --> e62
+ag9 --> ag8
+
+c71 --> ag10
+ag10 --> e71
+e71 --> r71
+
+rectangle "Когда атрибуты проверены —\nсформировать черновик" <<policy>> as pol1
+rectangle "Когда черновик сформирован —\nсоздать задачу модерации" <<policy>> as pol2
+rectangle "Когда карточка одобрена —\nопубликовать описание" <<policy>> as pol3
+rectangle "Когда описание опубликовано —\nпересобрать ленту" <<policy>> as pol4
+rectangle "Когда заказ выдан —\nразрешить возврат" <<policy>> as pol5
+rectangle "Когда оценка посадки учтена —\nуточнить рекомендацию" <<policy>> as pol6
+
+e13 --> pol1
+pol1 --> c21
+e21 --> pol2
+pol2 --> c31
+e31 --> pol3
+pol3 --> ag2
+e23 --> pol4
+pol4 --> c41
+e52 --> pol5
+pol5 --> c61
+e71 --> pol6
+pol6 --> c42
+
+note bottom of BC2
+  Контекст «Описания» — ядро продукта (core domain).
+  Именно здесь сосредоточено конкурентное преимущество,
+  поэтому он разрабатывается собственной командой
+  и не заменяется готовым решением
+end note
+
+note bottom of BC6
+  Контекст «Возвраты» выделен отдельно, а не включён
+  в «Заказы»: по данным опроса это барьер №1 (39,1%),
+  у него собственные правила, роли и жизненный цикл
+end note
+
+@enduml

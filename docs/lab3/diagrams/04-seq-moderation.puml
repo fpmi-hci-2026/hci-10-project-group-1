@@ -1,0 +1,106 @@
+@startuml 04-seq-moderation
+title Диаграмма последовательности 3. Модерация карточки (US-08, US-09, US-10)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+autonumber
+
+actor "Администратор-\nмодератор" as M
+participant "Админ-панель" as UI
+participant "API Gateway" as API
+participant "Сервис\nмодерации" as Mod
+participant "Сервис\nописаний" as Desc
+participant "Сервис\nкаталога" as Cat
+participant "Сервис\nуведомлений" as Notif
+database "БД" as DB
+
+M -> UI : Открыть очередь модерации
+activate UI
+UI -> API : GET /api/v1/moderation/queue?sort=confidence_asc
+activate API
+API -> Mod : getQueue(sort)
+activate Mod
+Mod -> DB : SELECT задачи ORDER BY уверенность ASC
+DB --> Mod : список задач
+Mod -> Mod : Вынести заблокированные\nкарточки в отдельный блок
+Mod --> API : Очередь (заблокированные → низкая → средняя → высокая)
+deactivate Mod
+API --> UI : 200 OK
+deactivate API
+UI --> M : Очередь с текстовыми метками\nуровня уверенности
+deactivate UI
+
+M -> UI : Открыть карточку с низкой уверенностью
+activate UI
+UI -> API : POST /api/v1/moderation/tasks/{id}/claim
+activate API
+API -> Mod : claim(taskId, moderatorId)
+activate Mod
+Mod -> DB : UPDATE задача SET взятаВРаботу, блокировкаДо = now()+15м
+alt Задача уже захвачена другим модератором
+  Mod --> API : 409 Conflict
+  API --> UI : Задача недоступна
+  UI --> M : Открыть следующую задачу
+else Захват успешен
+  Mod --> API : 200 OK
+  API -> Desc : getDescriptionWithSources(descriptionId)
+  activate Desc
+  Desc --> API : текст + атрибуты-источники + фото
+  deactivate Desc
+  API --> UI : Данные для сверки
+  deactivate API
+  UI --> M : Текст, фото и атрибуты\nна одном экране
+  deactivate UI
+end
+
+alt Описание достоверно
+  M -> UI : Одобрить (горячая клавиша)
+  activate UI
+  UI -> API : POST /api/v1/moderation/tasks/{id}/approve
+  activate API
+  API -> Mod : approve(taskId)
+  activate Mod
+  Mod -> Desc : publish(descriptionId)
+  activate Desc
+  Desc -> DB : UPDATE описание SET статус='ОПУБЛИКОВАНО'
+  Desc -> Cat : indexProduct(productId)
+  Desc --> Mod : опубликовано
+  deactivate Desc
+  Mod -> Notif : notifySeller(продавецId, 'approved')
+  Mod --> API : 200 OK + следующая задача
+  deactivate Mod
+  API --> UI : Следующая карточка
+  deactivate API
+  UI --> M : Автоматически открыта\nследующая задача
+  deactivate UI
+else Описание недостоверно
+  M -> UI : Вернуть продавцу
+  activate UI
+  UI -> API : GET /api/v1/moderation/comment-templates
+  activate API
+  API --> UI : Список шаблонов
+  deactivate API
+  UI --> M : Выбор шаблона комментария
+  M -> UI : Выбрать шаблон и дополнить
+  UI -> API : POST /api/v1/moderation/tasks/{id}/reject
+  activate API
+  API -> Mod : reject(taskId, комментарий)
+  activate Mod
+  Mod -> Desc : returnToSeller(descriptionId, комментарий)
+  Mod -> DB : INSERT нарушение_продавца
+  Mod -> Mod : Пересчитать рейтинг\nкачества карточек продавца
+  Mod -> Notif : notifySeller(продавецId, 'returned', комментарий)
+  Mod --> API : 200 OK
+  deactivate Mod
+  API --> UI : Подтверждение
+  deactivate API
+  UI --> M : Карточка возвращена
+  deactivate UI
+end
+
+note over Mod, DB
+  Среднее время модерации одной карточки —
+  не более 2 минут (измеримый критерий
+  успешности из стратегии дизайна ЛР№1)
+end note
+
+@enduml

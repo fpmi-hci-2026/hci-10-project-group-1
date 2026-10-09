@@ -1,0 +1,267 @@
+@startuml 04-erd
+title Схема базы данных (ERD, нотация «сущность-связь»)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam linetype ortho
+hide circle
+
+entity "seller" as seller {
+  * id : uuid <<PK>>
+  --
+  * brand_name : varchar(120)
+  * unp : char(9) <<UQ>>
+  city_id : uuid <<FK>>
+  rating : numeric(2,1)
+  * created_at : timestamptz
+}
+
+entity "category" as category {
+  * id : uuid <<PK>>
+  --
+  parent_id : uuid <<FK>>
+  * name : varchar(120)
+  * level : smallint
+  * slug : varchar(160) <<UQ>>
+}
+
+entity "brand" as brand {
+  * id : uuid <<PK>>
+  --
+  * name : varchar(120) <<UQ>>
+  * made_in_belarus : boolean
+}
+
+entity "product" as product {
+  * id : uuid <<PK>>
+  --
+  * seller_id : uuid <<FK>>
+  * category_id : uuid <<FK>>
+  brand_id : uuid <<FK>>
+  size_chart_id : uuid <<FK>>
+  * sku : varchar(64)
+  * title : varchar(200)
+  * price : numeric(10,2)
+  * season : season_enum
+  country_of_origin : varchar(80)
+  * created_at : timestamptz
+}
+
+entity "product_variant" as variant {
+  * id : uuid <<PK>>
+  --
+  * product_id : uuid <<FK>>
+  * size : varchar(16)
+  color : varchar(40)
+  barcode : varchar(32) <<UQ>>
+}
+
+entity "stock" as stock {
+  * variant_id : uuid <<PK, FK>>
+  * warehouse_id : uuid <<PK, FK>>
+  --
+  * quantity : integer
+  * reserved : integer
+}
+
+entity "attribute_dict" as attrdict {
+  * code : varchar(64) <<PK>>
+  --
+  * display_name : varchar(120)
+  * value_type : varchar(16)
+  * required : boolean
+}
+
+entity "product_attribute" as attr {
+  * product_id : uuid <<PK, FK>>
+  * code : varchar(64) <<PK, FK>>
+  --
+  value : text
+}
+
+entity "size_chart" as chart {
+  * id : uuid <<PK>>
+  --
+  * brand_id : uuid <<FK>>
+  * item_type : varchar(64)
+  fit_deviation : numeric(3,2)
+}
+
+entity "description" as descr {
+  * id : uuid <<PK>>
+  --
+  * product_id : uuid <<FK, UQ>>
+  * status : moderation_status_enum
+  * confidence : confidence_enum
+  block_reason : text
+  * created_at : timestamptz
+}
+
+entity "description_version" as ver {
+  * id : uuid <<PK>>
+  --
+  * description_id : uuid <<FK>>
+  * number : smallint
+  * kind : version_kind_enum
+  * body : text
+  * author : varchar(64)
+  * created_at : timestamptz
+}
+
+entity "generation_rule" as rule {
+  * id : uuid <<PK>>
+  --
+  * phrase : varchar(200) <<UQ>>
+  explanation : text
+  * active : boolean
+}
+
+entity "moderation_task" as task {
+  * id : uuid <<PK>>
+  --
+  * description_id : uuid <<FK>>
+  moderator_id : uuid <<FK>>
+  claimed_at : timestamptz
+  locked_until : timestamptz
+  * created_at : timestamptz
+}
+
+entity "moderation_decision" as decision {
+  * id : uuid <<PK>>
+  --
+  * task_id : uuid <<FK, UQ>>
+  * verdict : verdict_enum
+  comment : text
+  template_id : uuid <<FK>>
+  * decided_at : timestamptz
+  duration_sec : integer
+}
+
+entity "customer" as customer {
+  * id : uuid <<PK>>
+  --
+  * phone : varchar(20) <<UQ>>
+  name : varchar(120)
+  city_id : uuid <<FK>>
+  * created_at : timestamptz
+}
+
+entity "size_params" as sizeparams {
+  * customer_id : uuid <<PK, FK>>
+  --
+  height_cm : smallint
+  chest_cm : smallint
+  foot_length_cm : numeric(3,1)
+  usual_top_size : varchar(8)
+}
+
+entity "orders" as orders {
+  * id : uuid <<PK>>
+  --
+  * customer_id : uuid <<FK>>
+  * number : varchar(16) <<UQ>>
+  * status : order_status_enum
+  * payment_method : payment_method_enum
+  * delivery_method : delivery_method_enum
+  pickup_point_id : uuid <<FK>>
+  * total : numeric(10,2)
+  return_due_date : date
+  * created_at : timestamptz
+}
+
+entity "order_item" as orderitem {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid <<FK>>
+  * variant_id : uuid <<FK>>
+  * quantity : integer
+  * price_at_order : numeric(10,2)
+}
+
+entity "payment" as payment {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid <<FK, UQ>>
+  * amount : numeric(10,2)
+  external_id : varchar(64)
+  * status : varchar(24)
+  paid_at : timestamptz
+}
+
+entity "return_request" as ret {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid <<FK>>
+  * order_item_id : uuid <<FK>>
+  * reason : return_reason_enum
+  * status : return_status_enum
+  * is_exchange : boolean
+  pickup_point_id : uuid <<FK>>
+  * created_at : timestamptz
+}
+
+entity "return_photo" as retphoto {
+  * id : uuid <<PK>>
+  --
+  * return_request_id : uuid <<FK>>
+  * url : varchar(400)
+}
+
+entity "review" as review {
+  * id : uuid <<PK>>
+  --
+  * product_id : uuid <<FK>>
+  * customer_id : uuid <<FK>>
+  * rating : smallint
+  body : text
+  fit_rating : fit_enum
+  * created_at : timestamptz
+}
+
+entity "return_policy" as policy {
+  * id : uuid <<PK>>
+  --
+  * category_id : uuid <<FK, UQ>>
+  * period_days : smallint
+  * return_forbidden : boolean
+}
+
+seller ||--o{ product
+category ||--o{ product
+category ||--o| policy
+category |o--o{ category
+brand ||--o{ product
+brand ||--o{ chart
+chart |o--o{ product
+product ||--|{ variant
+variant ||--|{ stock
+product ||--|{ attr
+attrdict ||--o{ attr
+product ||--o| descr
+descr ||--|{ ver
+task }o--|| descr
+task ||--o| decision
+customer ||--o| sizeparams
+customer ||--o{ orders
+customer ||--o{ review
+product ||--o{ review
+orders ||--|{ orderitem
+orders ||--o| payment
+orders ||--o{ ret
+orderitem ||--o{ ret
+ret ||--o{ retphoto
+variant ||--o{ orderitem
+
+note bottom of descr
+  UQ на product_id: у товара не более
+  одного описания; версии — в отдельной
+  таблице с каскадным удалением
+end note
+
+note right of rule
+  Таблица правил не связана
+  внешним ключом с описаниями:
+  правила применяются алгоритмом
+  во время проверки текста
+end note
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml 06-em-patterns
+' Задание 6. Event Modeling: четыре шаблона
+title Event Modeling — четыре шаблона на примерах проекта «МаркетШоп.by»
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  FontSize 11
+  BorderColor #6A6A6A
+  BackgroundColor<<trigger>> #FFFFFF
+  BackgroundColor<<command>> #6DB3F2
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<view>> #A8D5A2
+  BackgroundColor<<auto>> #D9D9D9
+  BackgroundColor<<external>> #F2A9B8
+}
+skinparam package {
+  BackgroundColor #FCFBF8
+  BorderColor #22304A
+  FontStyle bold
+}
+
+legend top left
+  |<back:#FFFFFF>   </back>| триггер / интерфейс (wireframe или маршрут API) |
+  |<back:#6DB3F2>   </back>| команда — намерение изменить состояние |
+  |<back:#FFB366>   </back>| событие — факт, сохранённый на диск |
+  |<back:#A8D5A2>   </back>| представление (view / read model) |
+  |<back:#D9D9D9>   </back>| автоматизированный триггер (процессор) |
+  |<back:#F2A9B8>   </back>| внешняя система |
+endlegend
+
+package "1. Командный шаблон (Command Pattern)\nTrigger → Command → Event(s)" as P1 {
+  rectangle "Экран «Загрузка товара»\nPOST /api/v1/products" <<trigger>> as t1
+  rectangle "Загрузить товар" <<command>> as c1
+  rectangle "Товар\nзагружен" <<event>> as e1
+  rectangle "Атрибуты товара\nсохранены" <<event>> as e2
+  t1 --> c1
+  c1 --> e1
+  c1 --> e2
+}
+
+package "2. Шаблон представления (View Pattern)\nEvent(s) → View" as P2 {
+  rectangle "Описание\nопубликовано" <<event>> as e3
+  rectangle "Остаток\nизменён" <<event>> as e4
+  rectangle "Карточка товара\nдля покупателя" <<view>> as v1
+  rectangle "Экран карточки\nGET /api/v1/products/{id}" <<trigger>> as t2
+  e3 --> v1
+  e4 --> v1
+  v1 --> t2
+}
+
+package "3. Шаблон автоматизации (Automation Pattern)\nEvent(s) → View → Automated Trigger → Command → Event(s)" as P3 {
+  rectangle "Атрибуты\nпроверены" <<event>> as e5
+  rectangle "Товары, ожидающие\nгенерации описания" <<view>> as v2
+  rectangle "Процессор\nгенерации описаний" <<auto>> as a1
+  rectangle "Сформировать\nчерновик описания" <<command>> as c2
+  rectangle "Черновик\nсформирован" <<event>> as e6
+  rectangle "Уровень уверенности\nрассчитан" <<event>> as e7
+  e5 --> v2
+  v2 --> a1
+  a1 --> c2
+  c2 --> e6
+  c2 --> e7
+}
+
+package "4. Шаблон передачи данных (Translation Pattern)\nEvent (внешняя система) → View → Automated Trigger → Command → Event" as P4 {
+  rectangle "Платёжный шлюз:\npayment.succeeded" <<external>> as x1
+  rectangle "Необработанные\nвебхуки платежей" <<view>> as v3
+  rectangle "Транслятор\nплатежей" <<auto>> as a2
+  rectangle "Подтвердить\nоплату заказа" <<command>> as c3
+  rectangle "Платёж\nпроведён" <<event>> as e8
+  x1 --> v3
+  v3 --> a2
+  a2 --> c3
+  c3 --> e8
+}
+
+' Фиксация порядка следования шаблонов слева направо
+e1 -[hidden]right-> e3
+v1 -[hidden]right-> e5
+e7 -[hidden]right-> x1
+
+note bottom of P3
+  Шаблон автоматизации — основа продукта:
+  генерация описания запускается не нажатием
+  кнопки, а появлением события (AC-05.1)
+end note
+
+note bottom of P4
+  Шаблон передачи данных применяется там,
+  где инициатива исходит от внешней системы:
+  вебхуки платёжного шлюза и статусы доставки
+end note
+
+@enduml

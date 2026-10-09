@@ -1,0 +1,112 @@
+@startuml 04-component
+title Диаграмма компонентов системы МаркетШоп.by
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+package "Клиентские приложения" {
+  [Мобильное приложение\n(Android / iOS)] as Mobile
+  [Веб-приложение SPA\n(React)] as Web
+  [Админ-панель\nмодератора] as AdminUI
+  [Кабинет продавца] as SellerUI
+}
+
+package "Контур API" {
+  [API Gateway] as GW
+  [Сервис аутентификации\nи авторизации] as Auth
+}
+
+package "Прикладные сервисы" {
+  [Сервис каталога] as Catalog
+  [Сервис описаний] as Descr
+  [Сервис проверки атрибутов] as Attr
+  [Сервис генерации описаний] as Gen
+  [Сервис проверки формулировок] as Rules
+  [Сервис рекомендаций] as Rec
+  [Ассистент по размеру] as Size
+  [Сервис заказов] as Orders
+  [Сервис платежей] as Payments
+  [Сервис возвратов] as Returns
+  [Сервис модерации] as Mod
+  [Сервис отзывов] as Reviews
+  [Сервис уведомлений] as Notif
+}
+
+package "Инфраструктура данных" {
+  database "PostgreSQL\n(основная БД)" as PG
+  database "Redis\n(кэш лент и сессий)" as Redis
+  database "OpenSearch\n(полнотекстовый поиск)" as Search
+  queue "Kafka\n(шина событий)" as Bus
+  folder "S3-совместимое\nхранилище" as S3
+}
+
+package "Внешние системы" {
+  [LLM-провайдер] as LLM
+  [ЕРИП] as ERIP
+  [Банк-эквайер] as Acq
+  [Белпочта / СДЭК /\nЕвропочта] as Delivery
+  [Сервис push-уведомлений] as Push
+}
+
+Mobile --> GW : HTTPS / REST
+Web --> GW : HTTPS / REST
+AdminUI --> GW
+SellerUI --> GW
+GW --> Auth : проверка токена
+
+GW --> Catalog
+GW --> Descr
+GW --> Rec
+GW --> Size
+GW --> Orders
+GW --> Returns
+GW --> Mod
+GW --> Reviews
+
+Catalog --> Attr : проверка полноты
+Attr --> Gen : генерация разрешена
+Gen --> LLM : HTTPS
+Gen --> Rules : проверка текста
+Gen --> Descr : сохранение версий
+Rules --> Descr : блокировка
+
+Descr --> Bus : событие\nОписаниеОпубликовано
+Mod --> Bus : событие\nКарточкаОдобрена
+Orders --> Bus : событие\nЗаказСоздан
+Returns --> Bus : событие\nЗаявкаНаВозвратСоздана
+
+Bus --> Rec : обновление индексов
+Bus --> Notif : триггеры уведомлений
+Bus --> Search : переиндексация
+
+Rec --> Redis
+Rec --> Catalog
+Size --> Reviews : статистика посадки
+Size --> Catalog : размерная сетка
+Orders --> Payments
+Payments --> ERIP
+Payments --> Acq
+Orders --> Delivery
+Returns --> Orders
+Notif --> Push
+
+Catalog --> PG
+Descr --> PG
+Orders --> PG
+Returns --> PG
+Mod --> PG
+Reviews --> PG
+Catalog --> Search
+Reviews --> S3
+Returns --> S3
+Catalog --> S3
+
+note bottom of Rules
+  Детерминированная проверка
+  текста вынесена в отдельный
+  компонент, чтобы правила
+  редактировались администратором
+  без изменения кода генератора
+end note
+
+@enduml

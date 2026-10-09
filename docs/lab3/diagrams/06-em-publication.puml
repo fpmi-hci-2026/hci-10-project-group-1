@@ -1,0 +1,123 @@
+@startuml 06-em-publication
+' Задание 6. Event Modeling: модель процесса публикации товара
+title Event Modeling — процесс «Публикация товара с автогенерацией описания»
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+skinparam rectangle {
+  FontSize 11
+  BorderColor #6A6A6A
+  BackgroundColor<<trigger>> #FFFFFF
+  BackgroundColor<<command>> #6DB3F2
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<view>> #A8D5A2
+  BackgroundColor<<auto>> #D9D9D9
+  BackgroundColor<<external>> #F2A9B8
+}
+skinparam package {
+  BorderColor #999999
+  FontStyle bold
+  FontSize 12
+}
+
+package "Слой 1. Триггеры и интерфейс (wireframes)" #FDFDFD {
+  rectangle "Экран\n«Загрузка товара»" <<trigger>> as ui1
+  rectangle "Подсказка\n«Недостающие поля»" <<trigger>> as ui2
+  rectangle "Редактор описания\nс подсветкой" <<trigger>> as ui3
+  rectangle "Экран\n«Очередь модерации»" <<trigger>> as ui4
+  rectangle "Карточка товара\n(покупатель)" <<trigger>> as ui5
+}
+
+package "Слой 2. Команды, представления и процессоры" #F8FAFC {
+  rectangle "Загрузить\nтовар" <<command>> as cm1
+  rectangle "Товары, ожидающие\nпроверки атрибутов" <<view>> as vw1
+  rectangle "Процессор\nпроверки атрибутов" <<auto>> as au1
+  rectangle "Проверить\nполноту атрибутов" <<command>> as cm2
+  rectangle "Список\nнедостающих полей" <<view>> as vw2
+  rectangle "Дозаполнить\nатрибуты" <<command>> as cm3
+  rectangle "Товары, готовые\nк генерации" <<view>> as vw3
+  rectangle "Процессор\nгенерации" <<auto>> as au2
+  rectangle "Сформировать\nчерновик" <<command>> as cm4
+  rectangle "LLM-провайдер" <<external>> as ex1
+  rectangle "Черновик\nи уровень уверенности" <<view>> as vw4
+  rectangle "Процессор проверки\nформулировок" <<auto>> as au3
+  rectangle "Проверить\nформулировки" <<command>> as cm5
+  rectangle "Отредактировать\nописание" <<command>> as cm6
+  rectangle "Отправить\nна модерацию" <<command>> as cm7
+  rectangle "Очередь модерации\nпо уверенности" <<view>> as vw5
+  rectangle "Одобрить\nкарточку" <<command>> as cm8
+  rectangle "Вернуть\nпродавцу" <<command>> as cm9
+  rectangle "Процессор\nпубликации" <<auto>> as au4
+  rectangle "Опубликовать\nописание" <<command>> as cm10
+  rectangle "Карточка товара\nс описанием" <<view>> as vw6
+}
+
+package "Слой 3. Поток событий (что остаётся на диске)" #FFFBF5 {
+  rectangle "Товар\nзагружен" <<event>> as ev1
+  rectangle "Атрибуты\nсохранены" <<event>> as ev2
+  rectangle "Неполнота\nобнаружена" <<event>> as ev3
+  rectangle "Атрибуты\nпроверены" <<event>> as ev4
+  rectangle "Черновик\nсформирован" <<event>> as ev5
+  rectangle "Уверенность\nрассчитана" <<event>> as ev6
+  rectangle "Запрещённая\nформулировка найдена" <<event>> as ev7
+  rectangle "Описание\nзаблокировано" <<event>> as ev8
+  rectangle "Описание\nотредактировано" <<event>> as ev9
+  rectangle "Карточка отправлена\nна модерацию" <<event>> as ev10
+  rectangle "Карточка\nодобрена" <<event>> as ev11
+  rectangle "Карточка\nвозвращена" <<event>> as ev12
+  rectangle "Описание\nопубликовано" <<event>> as ev13
+}
+
+ui1 --> cm1
+cm1 --> ev1
+cm1 --> ev2
+ev2 --> vw1
+vw1 --> au1
+au1 --> cm2
+cm2 --> ev3
+cm2 --> ev4
+ev3 --> vw2
+vw2 --> ui2
+ui2 --> cm3
+cm3 --> ev4
+ev4 --> vw3
+vw3 --> au2
+au2 --> cm4
+cm4 --> ex1
+ex1 --> ev5
+cm4 --> ev6
+ev5 --> vw4
+vw4 --> au3
+au3 --> cm5
+cm5 --> ev7
+ev7 --> ev8
+ev8 --> ui3
+vw4 --> ui3
+ui3 --> cm6
+cm6 --> ev9
+ev9 --> vw4
+ui3 --> cm7
+cm7 --> ev10
+ev10 --> vw5
+vw5 --> ui4
+ui4 --> cm8
+ui4 --> cm9
+cm8 --> ev11
+cm9 --> ev12
+ev11 --> au4
+au4 --> cm10
+cm10 --> ev13
+ev13 --> vw6
+vw6 --> ui5
+
+note right of au3
+  Слайс «Проверка формулировок»:
+  минимальная единица работы,
+  которую можно передать
+  разработчику целиком —
+  от интерфейса до записи события
+end note
+
+@enduml

@@ -1,0 +1,75 @@
+@startuml 04-usecase-buyer
+' Задание 4. Детализированная диаграмма вариантов использования: путь покупателя
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Гость" as Guest
+actor "Покупатель" as Buyer
+actor "Покупатель-новичок" as Novice
+actor "Система рекомендаций" as Rec <<system>>
+actor "Система генерации\nописаний" as Gen <<system>>
+actor "Платёжный шлюз" as Pay <<external>>
+actor "Служба доставки" as Delivery <<external>>
+
+Guest <|-- Buyer
+Buyer <|-- Novice
+
+rectangle "МаркетШоп.by — контур покупателя" {
+  usecase "UC-B1\nПросмотреть персонализированную\nленту рекомендаций" as B1
+  usecase "UC-B2\nНайти товар в каталоге\nпо фильтрам" as B2
+  usecase "UC-B3\nПросмотреть карточку товара" as B3
+  usecase "UC-B4\nПолучить рекомендацию размера" as B4
+  usecase "UC-B5\nУточнить параметры размера" as B5
+  usecase "UC-B6\nСравнить товары по описанию" as B6
+  usecase "UC-B7\nОформить заказ" as B7
+  usecase "UC-B8\nОплатить заказ" as B8
+  usecase "UC-B9\nОформить возврат или обмен" as B9
+  usecase "UC-B10\nОставить отзыв\nс оценкой посадки" as B10
+  usecase "UC-B11\nЗадать вопрос продавцу" as B11
+  usecase "UC-B12\nАвторизоваться" as B12
+  usecase "UC-B13\nПоискать товар по фото\nили штрихкоду" as B13
+}
+
+Guest --> B1
+Guest --> B2
+Guest --> B3
+Guest --> B12
+Buyer --> B6
+Buyer --> B7
+Buyer --> B9
+Buyer --> B10
+Novice --> B4
+Novice --> B5
+
+Rec --> B1
+Gen --> B3
+B8 --> Pay
+B7 --> Delivery
+
+B1 ..> B3 : <<include>>
+B2 ..> B3 : <<include>>
+B13 ..> B2 : <<include>>
+B3 ..> B4 : <<extend>>
+B4 ..> B5 : <<extend>>
+B3 ..> B11 : <<extend>>
+B7 ..> B8 : <<include>>
+B7 ..> B12 : <<include>>
+B9 ..> B12 : <<include>>
+B10 ..> B12 : <<include>>
+
+note bottom of B5
+  Расширение срабатывает,
+  только если параметры размера
+  не заданы в профиле (US-04)
+end note
+
+note bottom of B11
+  Расширение срабатывает при
+  неполном описании — нет блока
+  «Уход» (US-02, AC-02.5)
+end note
+
+@enduml

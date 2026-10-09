@@ -1,0 +1,132 @@
+@startuml 06-em-purchase
+' Задание 6. Event Modeling: модель процессов покупки, доставки и возврата
+title Event Modeling — процессы «Подбор и покупка» и «Возврат или обмен»
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+skinparam rectangle {
+  FontSize 11
+  BorderColor #6A6A6A
+  BackgroundColor<<trigger>> #FFFFFF
+  BackgroundColor<<command>> #6DB3F2
+  BackgroundColor<<event>> #FFB366
+  BackgroundColor<<view>> #A8D5A2
+  BackgroundColor<<auto>> #D9D9D9
+  BackgroundColor<<external>> #F2A9B8
+}
+skinparam package {
+  BorderColor #999999
+  FontStyle bold
+  FontSize 12
+}
+
+package "Слой 1. Триггеры и интерфейс" #FDFDFD {
+  rectangle "Главная:\nлента рекомендаций" <<trigger>> as u1
+  rectangle "Карточка товара\n+ ассистент по размеру" <<trigger>> as u2
+  rectangle "Экран\nоформления заказа" <<trigger>> as u3
+  rectangle "Экран\n«Мои заказы»" <<trigger>> as u4
+  rectangle "Форма заявки\nна возврат" <<trigger>> as u5
+}
+
+package "Слой 2. Команды, представления и процессоры" #F8FAFC {
+  rectangle "Процессор\nрекомендаций" <<auto>> as b1
+  rectangle "Сформировать\nленту" <<command>> as b2
+  rectangle "Лента\nрекомендаций" <<view>> as b3
+  rectangle "Рекомендовать\nразмер" <<command>> as b4
+  rectangle "Рекомендация\nразмера" <<view>> as b5
+  rectangle "Добавить\nв корзину" <<command>> as b6
+  rectangle "Корзина\nи условия возврата" <<view>> as b7
+  rectangle "Создать\nзаказ" <<command>> as b8
+  rectangle "Платёжный шлюз" <<external>> as b9
+  rectangle "Необработанные\nвебхуки платежей" <<view>> as b10
+  rectangle "Транслятор\nплатежей" <<auto>> as b11
+  rectangle "Подтвердить\nоплату" <<command>> as b12
+  rectangle "Служба доставки" <<external>> as b13
+  rectangle "Транслятор\nстатусов доставки" <<auto>> as b14
+  rectangle "Отметить\nвыдачу заказа" <<command>> as b15
+  rectangle "Мои заказы\nс признаком возврата" <<view>> as b16
+  rectangle "Создать заявку\nна возврат" <<command>> as b17
+  rectangle "Статус\nзаявки" <<view>> as b18
+  rectangle "Оставить\nотзыв" <<command>> as b19
+  rectangle "Процессор\nстатистики посадки" <<auto>> as b20
+}
+
+package "Слой 3. Поток событий" #FFFBF5 {
+  rectangle "Описание\nопубликовано" <<event>> as f1
+  rectangle "Лента\nсформирована" <<event>> as f2
+  rectangle "Карточка\nпросмотрена" <<event>> as f3
+  rectangle "Размер\nрекомендован" <<event>> as f4
+  rectangle "Товар добавлен\nв корзину" <<event>> as f5
+  rectangle "Остаток\nзарезервирован" <<event>> as f6
+  rectangle "Заказ\nсоздан" <<event>> as f7
+  rectangle "Платёж\nпроведён" <<event>> as f8
+  rectangle "Заказ передан\nв доставку" <<event>> as f9
+  rectangle "Заказ\nвыдан" <<event>> as f10
+  rectangle "Срок возврата\nзапущен" <<event>> as f11
+  rectangle "Заявка на возврат\nсоздана" <<event>> as f12
+  rectangle "Заявка\nодобрена" <<event>> as f13
+  rectangle "Средства\nвозвращены" <<event>> as f14
+  rectangle "Отзыв\nоставлен" <<event>> as f15
+  rectangle "Оценка посадки\nучтена" <<event>> as f16
+}
+
+f1 --> b1
+b1 --> b2
+b2 --> f2
+f2 --> b3
+b3 --> u1
+u1 --> u2
+u2 --> f3
+u2 --> b4
+b4 --> f4
+f4 --> b5
+b5 --> u2
+u2 --> b6
+b6 --> f5
+f5 --> b7
+b7 --> u3
+u3 --> b8
+b8 --> f6
+b8 --> f7
+f7 --> b9
+b9 --> b10
+b10 --> b11
+b11 --> b12
+b12 --> f8
+f8 --> b13
+b13 --> f9
+b13 --> b14
+b14 --> b15
+b15 --> f10
+f10 --> f11
+f11 --> b16
+b16 --> u4
+u4 --> u5
+u5 --> b17
+b17 --> f12
+f12 --> f13
+f13 --> f14
+f13 --> b18
+b18 --> u4
+u4 --> b19
+b19 --> f15
+f15 --> b20
+b20 --> f16
+f16 --> b4
+
+note right of b11
+  Шаблон передачи данных:
+  инициатива у внешней системы,
+  вебхук транслируется
+  во внутреннюю команду
+end note
+
+note bottom of f16
+  Обратная связь: оценка посадки
+  из отзыва уточняет будущие
+  рекомендации размера (US-03)
+end note
+
+@enduml

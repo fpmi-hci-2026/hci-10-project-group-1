@@ -1,0 +1,75 @@
+@startuml 04-seq-size-assistant
+title Диаграмма последовательности 2. Ассистент по размеру (US-03, US-04)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+autonumber
+
+actor "Покупатель-\nновичок" as U
+participant "Карточка\nтовара (UI)" as UI
+participant "API Gateway" as API
+participant "Ассистент\nпо размеру" as Asst
+participant "Сервис\nпрофиля" as Prof
+participant "Сервис\nотзывов" as Rev
+participant "Сервис\nкаталога" as Cat
+
+U -> UI : Открыть карточку товара
+activate UI
+UI -> API : GET /api/v1/products/{id}/size-advice
+activate API
+API -> Asst : advise(productId, userId)
+activate Asst
+
+Asst -> Prof : getSizeParams(userId)
+activate Prof
+Prof --> Asst : ПараметрыРазмера | null
+deactivate Prof
+
+alt Параметры не заданы
+  Asst --> API : 200 OK, needParams = true
+  API --> UI : Признак «нужны параметры»
+  UI --> U : Показать форму из 3 полей\n(bottom sheet)
+  U -> UI : Ввести рост, обхват, длину стопы
+  UI -> API : PUT /api/v1/profile/size-params
+  API -> Prof : saveSizeParams(userId, params)
+  activate Prof
+  Prof --> API : 204 No Content
+  deactivate Prof
+  API -> Asst : advise(productId, userId)
+end
+
+Asst -> Cat : getSizeChart(productId)
+activate Cat
+Cat --> Asst : РазмернаяСетка | null
+deactivate Cat
+
+Asst -> Rev : getFitStats(productId)
+activate Rev
+Rev --> Asst : {маломерит: 28, соответствует: 11, большемерит: 3}
+deactivate Rev
+
+alt Отзывов >= 5 или сетка задана
+  Asst -> Asst : Рассчитать размер\nи отклонение посадки
+  Asst -> Cat : checkStock(productId, размер)
+  activate Cat
+  Cat --> Asst : вНаличии = false
+  deactivate Cat
+  Asst -> Asst : Подобрать ближайший\nдоступный размер
+  Asst --> API : {размер: 39, пояснение: "маломерит на полразмера",\nпометка: "размера 39 нет в наличии"}
+  API --> UI : Рекомендация
+  UI --> U : Показать рекомендацию\nи подставить размер в селектор
+else Данных недостаточно
+  Asst --> API : {достаточноДанных: false}
+  API --> UI : Признак нехватки данных
+  UI --> U : «Данных о посадке\nпока недостаточно»
+end
+deactivate Asst
+deactivate API
+deactivate UI
+
+note over UI, Asst
+  Рекомендация отображается не позднее
+  чем через 1 с после отправки формы,
+  без перезагрузки карточки (AC-04.5)
+end note
+
+@enduml
