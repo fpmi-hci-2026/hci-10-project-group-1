@@ -3434,7 +3434,7 @@ flowchart TB
         PG[("PostgreSQL")]
         Redis[("Redis")]
         Search[("OpenSearch")]
-        Bus{{"Kafka — шина событий"}}
+        Bus(["Kafka — шина событий"])
         S3[/"S3-хранилище"/]
     end
 
@@ -3645,7 +3645,7 @@ flowchart TB
             PG[("PostgreSQL 16<br/>primary + replica")]
             Redis[("Redis 7")]
             OS[("OpenSearch")]
-            Kafka{{"Kafka"}}
+            Kafka(["Kafka"])
         end
         S3[/"S3-совместимое хранилище"/]
     end

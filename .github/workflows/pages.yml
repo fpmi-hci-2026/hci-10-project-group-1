@@ -1,0 +1,56 @@
+# Сборка GitHub Pages из каталога /docs.
+#
+# Штатная сборка Pages («Deploy from a branch») клонирует подмодули и падает:
+# репозитории приложений приватные, а её токен имеет доступ только к текущему
+# репозиторию. Документация в подмодулях не нуждается, поэтому выключаем их.
+#
+# Чтобы workflow заработал: Settings → Pages → Build and deployment →
+# Source: GitHub Actions.
+
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout без подмодулей
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Настроить Pages
+        uses: actions/configure-pages@v5
+
+      - name: Собрать Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Выгрузить артефакт
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Опубликовать
+        id: deployment
+        uses: actions/deploy-pages@v4
