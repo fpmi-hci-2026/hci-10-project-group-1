@@ -1,49 +1,59 @@
 @startuml 04-package
 title Диаграмма пакетов серверной части
+
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
-skinparam packageStyle folder
+skinparam packageStyle rectangle
+skinparam defaultFontName "PT Sans"
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #8A8A8A
+  FontSize 13
+}
+skinparam ArrowColor #666666
+skinparam ArrowFontSize 11
 
-package "by.marketshop" {
+package "by.marketshop" as ROOT {
 
-  package "interfaces" as IF {
-    package "rest" as IFR
-    package "events" as IFE
-    package "admin" as IFA
+  package "interfaces — слой интерфейсов" as IF #F2F6FA {
+    package "rest\n<size:10><i>REST API витрины</i></size>" as IFR { }
+    package "events\n<size:10><i>приём доменных событий</i></size>" as IFE { }
+    package "admin\n<size:10><i>API админ-панели</i></size>" as IFA { }
   }
 
-  package "application" as APP {
-    package "catalog" as APPC
-    package "description" as APPD
-    package "recommendation" as APPR
-    package "order" as APPO
-    package "moderation" as APPM
-    package "returns" as APPRET
+  package "application — слой сценариев" as APP #F2FAF4 {
+    package "catalog\n<size:10><i>поиск и фильтрация</i></size>" as APPC { }
+    package "description\n<size:10><i>генерация описаний</i></size>" as APPD { }
+    package "recommendation\n<size:10><i>подбор рекомендаций</i></size>" as APPR { }
+    package "order\n<size:10><i>оформление заказа</i></size>" as APPO { }
+    package "moderation\n<size:10><i>очередь модерации</i></size>" as APPM { }
+    package "returns\n<size:10><i>возвраты и обмен</i></size>" as APPRET { }
   }
 
-  package "domain" as DOM {
-    package "catalog" as DOMC
-    package "description" as DOMD
-    package "customer" as DOMCU
-    package "order" as DOMO
-    package "moderation" as DOMM
-    package "shared" as DOMS
+  package "domain — доменный слой" as DOM #FDECE3 {
+    package "catalog\n<size:10><i>товар, атрибуты</i></size>" as DOMC { }
+    package "description\n<size:10><i>описание, версии</i></size>" as DOMD { }
+    package "customer\n<size:10><i>покупатель, профиль</i></size>" as DOMCU { }
+    package "order\n<size:10><i>заказ, позиции</i></size>" as DOMO { }
+    package "moderation\n<size:10><i>правила, решения</i></size>" as DOMM { }
+    package "shared\n<size:10><i>общие типы домена</i></size>" as DOMS { }
   }
 
-  package "infrastructure" as INF {
-    package "persistence" as INFP
-    package "llm" as INFL
-    package "payment" as INFPAY
-    package "delivery" as INFDEL
-    package "search" as INFS
-    package "messaging" as INFMSG
-    package "storage" as INFST
+  package "infrastructure — слой инфраструктуры" as INF #FAF6EC {
+    package "persistence\n<size:10><i>доступ к PostgreSQL</i></size>" as INFP { }
+    package "llm\n<size:10><i>клиент LLM-провайдера</i></size>" as INFL { }
+    package "payment\n<size:10><i>платёжный шлюз</i></size>" as INFPAY { }
+    package "delivery\n<size:10><i>служба доставки</i></size>" as INFDEL { }
+    package "search\n<size:10><i>поисковый индекс</i></size>" as INFS { }
+    package "messaging\n<size:10><i>брокер сообщений</i></size>" as INFMSG { }
+    package "storage\n<size:10><i>хранилище изображений</i></size>" as INFST { }
   }
 
-  package "config" as CFG
+  package "config\n<size:10><i>сборка приложения</i></size>" as CFG { }
 }
 
-IF ..> APP : вызывает сценарии
+' --- зависимости между слоями ---
+IF  ..> APP : вызывает сценарии
 APP ..> DOM : оперирует сущностями
 APP ..> INF : через порты (интерфейсы)
 INF ..> DOM : реализует репозитории
@@ -51,6 +61,7 @@ CFG ..> IF
 CFG ..> APP
 CFG ..> INF
 
+' --- зависимости между подпакетами ---
 IFR ..> APPC
 IFR ..> APPD
 IFR ..> APPO
