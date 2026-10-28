@@ -81,12 +81,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", default=str(ROOT / "ОТЧЁТ" / "ЛабРабота5_ПЧМИ.md"))
     a = ap.parse_args()
-    src = pathlib.Path(a.src)
+    src = pathlib.Path(a.src).resolve()
     work = src.parent
 
+    M.BASE_DIR = src.parent
     html = work / "_build.html"
     html.write_text(M.convert(src.read_text(encoding="utf-8")), encoding="utf-8")
-    soffice("--convert-to", "odt", "--outdir", str(work), str(html), cwd=work)
+    soffice("--infilter=HTML (StarWriter)", "--convert-to", "odt:writer8",
+            "--outdir", str(work), str(html), cwd=work)
 
     odt = work / "_build.odt"
     if not odt.exists():
