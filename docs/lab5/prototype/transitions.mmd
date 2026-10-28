@@ -1,0 +1,85 @@
+%% Карта переходов интерактивного прототипа — МаркетШоп.by, ЛР№5
+%% Отрисовать: mermaid.live или плагин Mermaid в VS Code; PNG вложить в отчёт
+flowchart TB
+  classDef guest fill:#EFEDE7,stroke:#978E7A,color:#1B2432
+  classDef buyer fill:#E6EDF5,stroke:#3A6EA5,color:#1B2432
+  classDef seller fill:#FBEDE2,stroke:#AD5A21,color:#1B2432
+  classDef mod fill:#FBF0D8,stroke:#8F6710,color:#1B2432
+  classDef admin fill:#E4F1E7,stroke:#2F7A43,color:#1B2432
+  classDef ai fill:#FBE6E3,stroke:#C0392B,color:#1B2432
+  classDef err fill:#FFFFFF,stroke:#C0392B,color:#C0392B,stroke-dasharray:4 3
+
+  START((Старт)) --> LOGIN[Вход / Регистрация<br/>UC-20, UC-21]
+  LOGIN -->|400 / 401| E401[/Ошибка входа<br/>problem+json/]
+  E401 -.-> LOGIN
+  LOGIN -->|роль buyer| FEED
+  LOGIN -->|роль seller| SPROD
+  LOGIN -->|роль moderator| MQUEUE
+  LOGIN -->|роль admin| ARULES
+
+  subgraph B["Покупатель — мобильный прототип"]
+    FEED[Лента «Специально для вас»<br/>UC-01] --> CARD[Карточка товара<br/>UC-03]
+    FEED --> CAT[Каталог и поиск<br/>UC-02]
+    CAT --> CARD
+    CARD --> SIZE[[Ассистент по размеру<br/>overlay, UC-04]]
+    SIZE -->|нет параметров| SPARAM[[Короткая форма параметров<br/>US-04]]
+    SPARAM --> SIZE
+    CARD --> CARTS[Корзина] --> ORDER[Оформление заказа<br/>UC-05, UC-06]
+    ORDER --> PAY[Оплата] --> ORD[Мои заказы<br/>UC-07]
+    ORD -->|до отправки| CANCEL[Отмена заказа<br/>UC-29]
+    ORD --> RET[Возврат или обмен<br/>UC-08]
+    RET -->|недоступен| RETNO[/Понятная причина отказа<br/>US-15/]
+    ORD --> REV[Отзыв с оценкой посадки<br/>UC-09]
+    CARD --> POLICY[Условия возврата<br/>UC-23]
+  end
+
+  subgraph S["Продавец — веб-прототип"]
+    SPROD[Мои товары] --> SNEW[Товар и атрибуты<br/>UC-10]
+    SNEW --> ACHECK{Атрибуты полные?<br/>UC-12}
+    ACHECK -->|нет, 422 missing| AMISS[/Список недостающих полей<br/>AC-06.2/]
+    AMISS -.-> SNEW
+    ACHECK -->|да| GEN[Черновик описания<br/>UC-11]
+    GEN -->|503| E503[/Сервис генерации недоступен/]
+    GEN --> EDIT[Правка описания<br/>UC-13]
+    EDIT --> ROLL[Откат к версии]
+    EDIT --> SUB{Отправить на модерацию<br/>UC-14}
+    SUB -->|409 blocked| BLOCK[/Запрещённая формулировка<br/>UC-17/]
+    BLOCK -.-> EDIT
+    SUB -->|ok| MQUEUE
+    SPROD --> BATCH[Партия товаров<br/>UC-24, лимит 20 / 413]
+    SPROD --> VAR[Варианты и остатки<br/>UC-25]
+    SPROD --> ANA[Аналитика описаний<br/>UC-26]
+    SPROD --> SRET[Заявки на возврат<br/>UC-15]
+  end
+
+  subgraph M["Модератор — веб-прототип"]
+    MQUEUE[Очередь по уверенности<br/>UC-16] --> CLAIM{Захват задачи}
+    CLAIM -->|409 занята| ECL[/Задачу взял другой модератор/]
+    CLAIM -->|ok| DEC[Сверка текста с атрибутами]
+    DEC -->|одобрить| PUB[Опубликовано] --> CARD
+    DEC -->|вернуть| RETC[Комментарий обязателен<br/>AC-10.3] --> EDIT
+    MQUEUE --> TPL[Шаблоны комментариев]
+  end
+
+  subgraph A["Администратор — веб-прототип"]
+    ARULES[Правила генерации<br/>UC-18] --> ATTR[Обязательные атрибуты<br/>UC-27]
+    ARULES --> VIOL[Нарушения продавцов<br/>UC-19]
+    ARULES --> AUDIT[Журнал действий<br/>UC-28]
+  end
+
+  subgraph AI["AI-ассистент — UC-30"]
+    AIS[[prepare_product_card]] -.-> SNEW
+    AIM[[moderation_review]] -.-> DEC
+    AIR[[return_request_assistant]] -.-> RET
+    AIS --> CONF{Подтверждение<br/>необратимого действия}
+    CONF -->|да| SUB
+    AUDIT -.-> AIS
+  end
+
+  class LOGIN,START guest
+  class FEED,CARD,CAT,SIZE,SPARAM,CARTS,ORDER,PAY,ORD,CANCEL,RET,REV,POLICY buyer
+  class SPROD,SNEW,GEN,EDIT,ROLL,SUB,BATCH,VAR,ANA,SRET,ACHECK seller
+  class MQUEUE,CLAIM,DEC,PUB,RETC,TPL mod
+  class ARULES,ATTR,VIOL,AUDIT admin
+  class AIS,AIM,AIR,CONF ai
+  class E401,AMISS,E503,BLOCK,ECL,RETNO err
