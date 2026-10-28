@@ -1,5 +1,0 @@
-# Сборка отчёта: вёрстка PDF и DOCX без LibreOffice
-weasyprint>=70
-pyphen>=0.18
-python-docx>=1.1
-pillow>=10
