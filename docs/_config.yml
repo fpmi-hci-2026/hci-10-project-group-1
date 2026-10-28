@@ -46,7 +46,6 @@ nav:
   - { title: Структура файлов, url: /files.html }
   - { title: Дизайн, url: /design.html }
   - { title: Презентация, url: /presentation.html }
-  - { title: Отчёты, url: /reports.html }
 
 defaults:
   - scope: { path: "" }
