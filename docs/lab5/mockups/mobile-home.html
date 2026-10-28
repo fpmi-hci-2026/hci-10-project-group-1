@@ -1,0 +1,409 @@
+<!doctype html><html lang="ru" data-mode="light"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Главная — МаркетШоп.by</title>
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/inter-400-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/inter-400-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/inter-400-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(fonts/inter-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/inter-600-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/inter-600-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/inter-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(fonts/inter-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/inter-700-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/inter-700-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/inter-700-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(fonts/inter-700-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(fonts/manrope-800-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(fonts/manrope-800-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(fonts/manrope-800-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(fonts/manrope-800-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html[data-mode="light"]{--bg:#FAF6EF; --surface:#FFFFFF; --surface-alt:#F2EBDF; --surface-inset:#E9E0D0; --text:#2A231C; --text-muted:#6F6459; --text-inverse:#FFFFFF; --border:#E8DFD2; --border-strong:#A38A67; --brand:#3E3228; --brand-hover:#52422F; --on-brand:#FFFFFF; --accent:#A8462A; --accent-hover:#8C3922; --on-accent:#FFFFFF; --accent-soft:#F7E6DF; --on-accent-soft:#7F3520; --success:#5A7038; --on-success:#FFFFFF; --success-soft:#E9EFDD; --warning:#8A6612; --on-warning:#FFFFFF; --warning-soft:#F8EFD9; --error:#A83A26; --on-error:#FFFFFF; --error-soft:#F8E4DF; --info:#40607F; --on-info:#FFFFFF; --info-soft:#E6EBF1; --decor:#7A8450; --focus:#40607F;}
+html[data-mode="dark"]{--bg:#1A1510; --surface:#231C15; --surface-alt:#2F261C; --surface-inset:#120E0A; --text:#F2EBE1; --text-muted:#A8998A; --text-inverse:#1A1510; --border:#3A2F23; --border-strong:#7E6952; --brand:#C2A784; --brand-hover:#D4BC9E; --on-brand:#1A1510; --accent:#E07F5C; --accent-hover:#EB9578; --on-accent:#2E0E05; --accent-soft:#3A1C12; --on-accent-soft:#F2BBA4; --success:#9BB069; --on-success:#1A2009; --success-soft:#28301A; --warning:#D9A83E; --on-warning:#241A05; --warning-soft:#332814; --error:#DF7259; --on-error:#2B0D06; --error-soft:#3A1B14; --info:#7E9EC0; --on-info:#0D1826; --info-soft:#1E2B3A; --decor:#9BB069; --focus:#A4BEDA;}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:Inter,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);
+     color:var(--text);font-size:16px;line-height:1.5}
+img{display:block;max-width:100%}
+.logo{font-family:Manrope,Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+
+/* ── шапка ── */
+.top{background:var(--brand);color:var(--on-brand)}
+.wrap{max-width:1440px;margin:0 auto;padding:0 60px}
+.top .wrap{display:flex;align-items:center;gap:32px;height:72px}
+.logo{font-size:22px;color:var(--on-brand)}
+.logo i{font-style:normal;color:var(--accent-soft)}
+.search{flex:1;display:flex;align-items:center;gap:10px;background:var(--surface);
+        border-radius:10px;height:44px;padding:0 14px;color:var(--text-muted);font-size:15px}
+.search .sb{margin-left:auto;background:var(--accent);color:var(--on-accent);
+        border-radius:7px;padding:7px 16px;font-size:14px;font-weight:600}
+.util{display:flex;gap:24px;font-size:13px}
+.util div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.util b{font-size:17px;font-weight:400;line-height:1}
+.nav{background:var(--surface);border-bottom:1px solid var(--border)}
+.nav .wrap{display:flex;align-items:center;gap:26px;height:52px;font-size:15px;overflow:auto}
+.nav .g{font-weight:600}
+.nav .sep{width:1px;height:20px;background:var(--border);flex:none}
+.nav .bel{margin-left:auto;background:var(--accent-soft);color:var(--on-accent-soft);
+        font-size:13px;font-weight:600;border-radius:999px;padding:6px 14px;white-space:nowrap}
+
+/* ── каркас страницы ── */
+.page{max-width:1440px;margin:0 auto;padding:24px 60px 56px}
+.crumbs{font-size:13px;color:var(--text-muted);margin-bottom:10px}
+.crumbs .last{color:var(--text)}
+h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
+.cnt{color:var(--text-muted);font-size:14px;margin-top:4px}
+.cols{display:grid;grid-template-columns:312px 1fr;gap:24px;margin-top:22px;align-items:start}
+
+/* ── фильтры ── */
+.side{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px}
+.fgroup{padding:14px 0;border-bottom:1px solid var(--border)}
+.fgroup:first-child{padding-top:0}
+.fgroup:last-child{border-bottom:0;padding-bottom:0}
+.fgroup h3{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+        color:var(--text-muted);margin-bottom:10px}
+.fgroup label{display:flex;align-items:center;gap:9px;font-size:14px;padding:5px 0}
+.fgroup label i{width:17px;height:17px;border:1.5px solid var(--border-strong);border-radius:5px;
+        flex:none;background:var(--surface)}
+.fgroup label.on i{background:var(--accent);border-color:var(--accent)}
+.fgroup label span.n{margin-left:auto;color:var(--text-muted);font-size:13px}
+.szgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.szgrid b{font-size:13px;font-weight:600;text-align:center;padding:8px 0;
+        border:1px solid var(--border-strong);border-radius:8px}
+.szgrid b.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.price-row{display:flex;gap:8px}
+.price-row span{flex:1;border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;
+        font-size:13px;color:var(--text-muted)}
+.hint{margin-top:14px;background:var(--accent-soft);color:var(--on-accent-soft);
+      border-radius:10px;padding:11px 12px;font-size:13px;line-height:1.4}
+
+/* ── панель сортировки ── */
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--surface);
+      border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:13px}
+.chip.sel{background:var(--accent-soft);color:var(--on-accent-soft);border-color:transparent;font-weight:600}
+.sort{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-muted)}
+.sort b{color:var(--text);font-weight:600}
+.fbtn{display:none;align-items:center;gap:8px;background:var(--surface);
+      border:1px solid var(--border-strong);border-radius:10px;padding:10px 15px;font-size:14px;font-weight:600}
+.fbtn em{font-style:normal;background:var(--accent);color:var(--on-accent);
+      border-radius:999px;padding:1px 7px;font-size:12px}
+
+/* ── сетка товаров ── */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+      overflow:hidden;display:flex;flex-direction:column}
+.ph{position:relative;aspect-ratio:3/4;background:var(--surface-alt)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.bdg{position:absolute;left:10px;top:10px;font-size:11px;font-weight:600;border-radius:999px;
+     padding:4px 9px;background:var(--accent-soft);color:var(--on-accent-soft)}
+.bdg.fit{background:var(--warning-soft);color:var(--warning)}
+.fav{position:absolute;right:10px;top:10px;width:30px;height:30px;border-radius:50%;
+     background:var(--surface);display:flex;align-items:center;justify-content:center;
+     font-size:14px;color:var(--text-muted)}
+.cb{padding:12px 13px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.br{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)}
+.ti{font-size:15px;font-weight:600;line-height:1.3}
+.sm{font-size:12.5px;line-height:1.4;color:var(--text-muted)}
+.rt{font-size:12.5px;color:var(--text-muted)}
+.rt b{color:var(--text)}
+.pr{margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px}
+.pr .now{font-size:18px;font-weight:700}
+.pr .old{font-size:13px;color:var(--text-muted);text-decoration:line-through}
+.cart{margin-top:9px;background:var(--accent);color:var(--on-accent);border-radius:9px;
+      min-height:44px;display:flex;align-items:center;justify-content:center;
+      font-size:13.5px;font-weight:600}
+.pager{display:flex;justify-content:center;gap:7px;margin-top:32px}
+.pager b{min-width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--border);border-radius:9px;font-size:14px;font-weight:600;background:var(--surface)}
+.pager b.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.sticky{display:none;position:sticky;bottom:0;background:var(--surface);
+      border-top:1px solid var(--border);padding:10px 16px;gap:10px}
+.sticky div{flex:1;text-align:center;font-size:14px;font-weight:600;padding:11px 0;
+      border:1px solid var(--border-strong);border-radius:10px}
+
+/* ══ 992–1199: сайдбар сохраняется, сетка 3 карточки ══ */
+@media (max-width:1199px){
+  .wrap,.page{max-width:1024px;padding-left:20px;padding-right:20px}
+  .cols{grid-template-columns:228px 1fr}
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+/* ══ 768–991: фильтры в выдвижную панель ══ */
+@media (max-width:991px){
+  .wrap,.page{max-width:768px;padding-left:24px;padding-right:24px}
+  .cols{grid-template-columns:1fr}
+  .side{display:none}
+  .fbtn{display:inline-flex}
+  .search .sb{display:none}
+  .util div span{display:none}
+  h1{font-size:26px}
+}
+/* ══ 576–767: сетка 2 карточки ══ */
+@media (max-width:767px){
+  .wrap,.page{max-width:600px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:16px}
+  .crumbs span:not(.last){display:none}
+  .sort{margin-left:0;width:100%}
+  h1{font-size:23px}
+}
+/* ══ 400–575: категории прокруткой, липкая панель снизу ══ */
+@media (max-width:575px){
+  .cart{min-height:48px}
+  .fav{width:44px;height:44px;font-size:17px}
+  .szgrid b{padding:13px 0}
+  .fgroup label{padding:9px 0}
+  .wrap,.page{max-width:none;padding-left:16px;padding-right:16px}
+  .top .wrap{height:60px;gap:14px}
+  .search{height:40px;font-size:0;gap:0;justify-content:center;flex:none;width:40px;padding:0}
+  .util{gap:16px}
+  .nav .wrap{gap:18px;height:46px}
+  .nav .bel{margin-left:0}
+  .bar .chip:nth-child(n+3){display:none}
+  .fbtn,.sort{display:none}
+  .sticky{display:flex}
+  .page{padding-bottom:16px}
+}
+/* ══ 320–399: уплотнение ══ */
+@media (max-width:399px){
+  .grid{gap:12px}
+  .logo{font-size:19px}
+  h1{font-size:20px}
+  .cb{padding:10px 11px 12px;gap:5px}
+  .ti{font-size:14px}
+  .sm{display:none}
+  .pr .now{font-size:16px}
+  .cart{font-size:13px}
+}
+
+.mtop{background:var(--brand);color:var(--on-brand);padding:10px 16px 12px}
+.mtop .r1{display:flex;align-items:center;justify-content:space-between}
+.mtop .logo{font-size:19px;color:var(--on-brand)}
+.mtop .logo i{font-style:normal;color:var(--accent-soft)}
+.mtop .ic{font-size:17px;opacity:.9}
+.msearch{margin-top:10px;background:var(--surface);border-radius:10px;height:40px;
+         display:flex;align-items:center;gap:9px;padding:0 13px;color:var(--text-muted);font-size:14px}
+.cats{display:flex;gap:8px;overflow:auto;padding:12px 16px 0}
+.cats b{flex:none;font-size:13px;font-weight:600;background:var(--surface);
+        border:1px solid var(--border);border-radius:999px;padding:7px 14px}
+.cats b.on{background:var(--accent-soft);color:var(--on-accent-soft);border-color:transparent}
+.greet{padding:16px 16px 0}
+.greet h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.greet p{font-size:13.5px;color:var(--text-muted);margin-top:3px}
+.mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 16px 16px}
+.mbar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);
+      display:flex;padding:8px 0 12px}
+.mbar div{flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;
+      justify-content:center;font-size:10px;color:var(--text-muted)}
+.mbar div b{font-size:17px;font-weight:400;margin-bottom:2px}
+.mbar div.on{color:var(--accent)}
+/* планшеты: три и четыре колонки, навигация сбоку */
+@media (min-width:700px){
+  .mgrid{grid-template-columns:repeat(3,1fr);gap:16px;padding:16px 24px 24px}
+  .cats{padding:16px 24px 0}.greet{padding:20px 24px 0}.greet h2{font-size:24px}
+  .mtop{padding:14px 24px 16px}
+}
+@media (min-width:820px){
+  .mgrid{grid-template-columns:repeat(4,1fr);gap:20px;padding:20px 32px 32px}
+  .cats{padding:20px 32px 0}.greet{padding:24px 32px 0}
+  .mtop{padding:16px 32px 18px}
+}
+</style></head><body>
+<header class="mtop">
+  <div class="r1"><div class="logo">МаркетШоп<i>.by</i></div>
+    <div><span class="ic">♡</span> &nbsp; <span class="ic">▤</span></div></div>
+  <div class="msearch">⌕ Платье, кроссовки, бренд…</div>
+</header>
+<div class="cats"><b class="on">Для вас</b><b>Новинки</b><b>Платья</b><b>Обувь</b>
+  <b>Сделано в Беларуси</b><b>Распродажа</b></div>
+<div class="greet"><h2>Специально для вас</h2>
+  <p>Подобрано по размеру 46, любимым категориям и сезону</p></div>
+<div class="mgrid"><article class="card">
+  <div class="ph"><img src="img/feed-1.jpg" alt=""/><span class="bdg">Сделано в Беларуси</span><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">Conte</div><div class="ti">Платье-свитер миди</div>
+    <div class="sm">Плотный трикотаж, не тянется в носке, прямой силуэт, длина миди, осень-зима</div>
+    <div class="rt">★ <b>4.6</b> · 128</div>
+    <div class="pr"><span class="now">149,00 р.</span><span class="old">189,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-2.jpg" alt=""/><span class="bdg fit">Маломерит на полразмера</span><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">Белвест</div><div class="ti">Сапоги кожаные на каблуке</div>
+    <div class="sm">Натуральная кожа, байковая подкладка, каблук 7 см, высокое голенище</div>
+    <div class="rt">★ <b>4.4</b> · 63</div>
+    <div class="pr"><span class="now">329,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-3.jpg" alt=""/><span class="bdg">Сделано в Беларуси</span><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">Mark Formelle</div><div class="ti">Блуза свободного кроя</div>
+    <div class="sm">Фактурный хлопок, свободный крой, спущенное плечо, длина по бедро, весна-лето</div>
+    <div class="rt">★ <b>4.5</b> · 91</div>
+    <div class="pr"><span class="now">89,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-4.jpg" alt=""/><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">DENIM.BY</div><div class="ti">Джинсы клёш с высокой посадкой</div>
+    <div class="sm">Плотный деним, высокая посадка, расклешённые от колена, длина в пол</div>
+    <div class="rt">★ <b>4.5</b> · 86</div>
+    <div class="pr"><span class="now">119,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-5.jpg" alt=""/><span class="bdg">Сделано в Беларуси</span><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">Elema</div><div class="ti">Тренч длинный двубортный</div>
+    <div class="sm">Хлопок с пропиткой, двубортный, пояс в комплекте, длина макси, демисезон</div>
+    <div class="rt">★ <b>4.7</b> · 54</div>
+    <div class="pr"><span class="now">389,00 р.</span><span class="old">459,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-6.jpg" alt=""/><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">ASICS</div><div class="ti">Кроссовки беговые</div>
+    <div class="sm">Сетка и замша, амортизирующая подошва, фиксация стопы, для бега</div>
+    <div class="rt">★ <b>4.8</b> · 207</div>
+    <div class="pr"><span class="now">279,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-7.jpg" alt=""/><span class="bdg">Сделано в Беларуси</span><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">ATELIER MINSK</div><div class="ti">Блуза атласная с объёмным рукавом</div>
+    <div class="sm">Атлас с матовым блеском, объёмный рукав, свободный крой, длина по бедро</div>
+    <div class="rt">★ <b>4.3</b> · 37</div>
+    <div class="pr"><span class="now">109,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article>
+<article class="card">
+  <div class="ph"><img src="img/feed-8.jpg" alt=""/><span class="fav">♡</span></div>
+  <div class="cb"><div class="br">Mark Formelle</div><div class="ti">Лонгслив в рубчик</div>
+    <div class="sm">Трикотаж в рубчик, хорошо тянется, облегающий крой, длина по бедро</div>
+    <div class="rt">★ <b>4.6</b> · 164</div>
+    <div class="pr"><span class="now">49,00 р.</span></div>
+    <div class="cart">В корзину</div></div></article></div>
+<nav class="mbar"><div class="on"><b>⌂</b>Главная</div><div><b>⌕</b>Поиск</div>
+  <div><b>♡</b>Избранное</div><div><b>▤</b>Корзина</div><div><b>☺</b>Профиль</div></nav>
+<script>(function(){var m=new URLSearchParams(location.search).get('mode');document.documentElement.dataset.mode=m==='dark'?'dark':'light';})();</script>
+</body></html>
