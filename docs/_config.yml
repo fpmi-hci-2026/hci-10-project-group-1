@@ -10,6 +10,8 @@ show_downloads: false
 
 exclude:
   - README.md
+  - REPO-SETUP.md
+  - lab3/build-pdf.mjs
   - Gemfile
   - Gemfile.lock
   - vendor
@@ -29,3 +31,23 @@ plugins:
 relative_links:
   enabled: true
   collections: false
+
+repository_url: https://github.com/fpmi-hci-2026/hci-10-project-group-1
+footer: БГУ ФПМИ, курс «Проектирование человеко-машинных интерфейсов», группа 10, команда 1, 2026
+
+# Меню сайта повторяет структуру страниц вики (ЛР№1, п. 8.2)
+nav:
+  - { title: О проекте, url: / }
+  - { title: Требования, url: /requirements.html }
+  - { title: Пользовательские истории, url: /user-stories.html }
+  - { title: Доп. спецификация, url: /specification.html }
+  - { title: База данных, url: /database.html }
+  - { title: API, url: /api.html }
+  - { title: Структура файлов, url: /files.html }
+  - { title: Дизайн, url: /design.html }
+  - { title: Презентация, url: /presentation.html }
+  - { title: Отчёты, url: /reports.html }
+
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
