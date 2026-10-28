@@ -7,7 +7,7 @@ description: "PostgreSQL 16: 40 таблиц, ERD и ключевые решен
 [диаграмм классов предметной области](lab3/README.md#45-диаграммы-классов-и-объектов)
 и содержит **40 таблиц** и **13 перечисляемых типов**.
 
-- **SQL-файл:** [`database/schema.sql`](https://github.com/fpmi-hci-2026/hci-10-project-group-1/blob/main/database/schema.sql)
+- **SQL-файл:** `database/schema.sql`
 - **Изображение ERD:** [`04-erd.png`](lab3/diagrams/img/04-erd.png)
 - **Исходник PlantUML:** [`04-erd.puml`](lab3/diagrams/04-erd.puml)
 
@@ -136,7 +136,7 @@ erDiagram
 ```
 
 На диаграмме показаны ключевые таблицы со столбцами; полный перечень из 40 таблиц — в
-[SQL-файле](https://github.com/fpmi-hci-2026/hci-10-project-group-1/blob/main/database/schema.sql).
+SQL-файле `database/schema.sql`.
 
 ---
 
