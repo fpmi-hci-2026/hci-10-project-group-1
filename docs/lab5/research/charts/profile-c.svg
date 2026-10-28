@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="766" height="668" viewBox="0 0 766 668" font-family="Inter, Arial, sans-serif">
+<style>.bg{fill:#FFFFFF}.ax{stroke:#D9DDE3;stroke-width:1}.axm{stroke:#AEB4BD;stroke-width:1}.lbl{font-size:13px;fill:#2A2F38}.lblr{font-size:13px;fill:#6B7280}.tick{font-size:12px;fill:#6B7280}.ttl{font-size:16px;font-weight:700;fill:#1B2432}.lg{font-size:12.5px;fill:#2A2F38}.band{fill:#F6F7F9}@media (prefers-color-scheme: dark){.bg{fill:#151A21}.band{fill:#1C222B}.ax{stroke:#2E3744}.axm{stroke:#46525F}.lbl{fill:#E6EAF0}.lblr{fill:#99A2AE}.tick{fill:#99A2AE}.ttl{fill:#F2F5F9}.lg{fill:#E6EAF0}}</style>
+<rect class="bg" width="766" height="668"/>
+<text class="ttl" x="20" y="30">Диаграмма-профиль вариантов дизайна</text>
+<text class="tick" x="20" y="50">Семантический дифференциал, шкала 1–5; пунктир — целевой профиль</text>
+<rect class="band" x="196" y="72" width="420" height="34"/>
+<rect class="band" x="196" y="140" width="420" height="34"/>
+<rect class="band" x="196" y="208" width="420" height="34"/>
+<rect class="band" x="196" y="276" width="420" height="34"/>
+<rect class="band" x="196" y="344" width="420" height="34"/>
+<rect class="band" x="196" y="412" width="420" height="34"/>
+<rect class="band" x="196" y="480" width="420" height="34"/>
+<rect class="band" x="196" y="548" width="420" height="34"/>
+<line class="ax" x1="196.0" y1="72" x2="196.0" y2="582"/>
+<text class="tick" x="196.0" y="64" text-anchor="middle">1</text>
+<line class="ax" x1="301.0" y1="72" x2="301.0" y2="582"/>
+<text class="tick" x="301.0" y="64" text-anchor="middle">2</text>
+<line class="axm" x1="406.0" y1="72" x2="406.0" y2="582"/>
+<text class="tick" x="406.0" y="64" text-anchor="middle">3</text>
+<line class="ax" x1="511.0" y1="72" x2="511.0" y2="582"/>
+<text class="tick" x="511.0" y="64" text-anchor="middle">4</text>
+<line class="ax" x1="616.0" y1="72" x2="616.0" y2="582"/>
+<text class="tick" x="616.0" y="64" text-anchor="middle">5</text>
+<text class="lbl" x="184" y="93.0" text-anchor="end">Злой</text>
+<text class="lblr" x="628" y="93.0">Добрый</text>
+<text class="lbl" x="184" y="127.0" text-anchor="end">Классический</text>
+<text class="lblr" x="628" y="127.0">Современный</text>
+<text class="lbl" x="184" y="161.0" text-anchor="end">Старый</text>
+<text class="lblr" x="628" y="161.0">Молодой</text>
+<text class="lbl" x="184" y="195.0" text-anchor="end">Опасный</text>
+<text class="lblr" x="628" y="195.0">Безопасный</text>
+<text class="lbl" x="184" y="229.0" text-anchor="end">Некрасивый</text>
+<text class="lblr" x="628" y="229.0">Красивый</text>
+<text class="lbl" x="184" y="263.0" text-anchor="end">Скучный</text>
+<text class="lblr" x="628" y="263.0">Интересный</text>
+<text class="lbl" x="184" y="297.0" text-anchor="end">Бесполезный</text>
+<text class="lblr" x="628" y="297.0">Полезный</text>
+<text class="lbl" x="184" y="331.0" text-anchor="end">Лживый ×2</text>
+<text class="lblr" x="628" y="331.0">Честный</text>
+<text class="lbl" x="184" y="365.0" text-anchor="end">Ненадёжный ×2</text>
+<text class="lblr" x="628" y="365.0">Надёжный</text>
+<text class="lbl" x="184" y="399.0" text-anchor="end">Сложный</text>
+<text class="lblr" x="628" y="399.0">Простой</text>
+<text class="lbl" x="184" y="433.0" text-anchor="end">Запутанный</text>
+<text class="lblr" x="628" y="433.0">Понятный</text>
+<text class="lbl" x="184" y="467.0" text-anchor="end">Раздражающий</text>
+<text class="lblr" x="628" y="467.0">Спокойный</text>
+<text class="lbl" x="184" y="501.0" text-anchor="end">Любительский</text>
+<text class="lblr" x="628" y="501.0">Профессиональный</text>
+<text class="lbl" x="184" y="535.0" text-anchor="end">Дешёвый</text>
+<text class="lblr" x="628" y="535.0">Дорогой</text>
+<text class="lbl" x="184" y="569.0" text-anchor="end">Устаревший</text>
+<text class="lblr" x="628" y="569.0">Технологичный</text>
+<polyline points="563.5,89.0 511.0,123.0 458.5,157.0 616.0,191.0 563.5,225.0 511.0,259.0 616.0,293.0 616.0,327.0 616.0,361.0 563.5,395.0 616.0,429.0 563.5,463.0 563.5,497.0 458.5,531.0 511.0,565.0" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 4"/>
+<circle cx="563.5" cy="89.0" r="2.6" fill="#6B7280"/>
+<circle cx="511.0" cy="123.0" r="2.6" fill="#6B7280"/>
+<circle cx="458.5" cy="157.0" r="2.6" fill="#6B7280"/>
+<circle cx="616.0" cy="191.0" r="2.6" fill="#6B7280"/>
+<circle cx="563.5" cy="225.0" r="2.6" fill="#6B7280"/>
+<circle cx="511.0" cy="259.0" r="2.6" fill="#6B7280"/>
+<circle cx="616.0" cy="293.0" r="2.6" fill="#6B7280"/>
+<circle cx="616.0" cy="327.0" r="2.6" fill="#6B7280"/>
+<circle cx="616.0" cy="361.0" r="2.6" fill="#6B7280"/>
+<circle cx="563.5" cy="395.0" r="2.6" fill="#6B7280"/>
+<circle cx="616.0" cy="429.0" r="2.6" fill="#6B7280"/>
+<circle cx="563.5" cy="463.0" r="2.6" fill="#6B7280"/>
+<circle cx="563.5" cy="497.0" r="2.6" fill="#6B7280"/>
+<circle cx="458.5" cy="531.0" r="2.6" fill="#6B7280"/>
+<circle cx="511.0" cy="565.0" r="2.6" fill="#6B7280"/>
+<polyline points="568.3,89.0 491.9,123.0 482.4,157.0 568.3,191.0 539.6,225.0 463.3,259.0 491.9,293.0 520.5,327.0 520.5,361.0 491.9,395.0 539.6,429.0 596.9,463.0 491.9,497.0 491.9,531.0 444.2,565.0" fill="none" stroke="#2F7A5A" stroke-width="2.4"/>
+<polygon points="568.3,84.5 572.8,93.0 563.8,93.0" fill="#2F7A5A"/>
+<polygon points="491.9,118.5 496.4,127.0 487.4,127.0" fill="#2F7A5A"/>
+<polygon points="482.4,152.5 486.9,161.0 477.9,161.0" fill="#2F7A5A"/>
+<polygon points="568.3,186.5 572.8,195.0 563.8,195.0" fill="#2F7A5A"/>
+<polygon points="539.6,220.5 544.1,229.0 535.1,229.0" fill="#2F7A5A"/>
+<polygon points="463.3,254.5 467.8,263.0 458.8,263.0" fill="#2F7A5A"/>
+<polygon points="491.9,288.5 496.4,297.0 487.4,297.0" fill="#2F7A5A"/>
+<polygon points="520.5,322.5 525.0,331.0 516.0,331.0" fill="#2F7A5A"/>
+<polygon points="520.5,356.5 525.0,365.0 516.0,365.0" fill="#2F7A5A"/>
+<polygon points="491.9,390.5 496.4,399.0 487.4,399.0" fill="#2F7A5A"/>
+<polygon points="539.6,424.5 544.1,433.0 535.1,433.0" fill="#2F7A5A"/>
+<polygon points="596.9,458.5 601.4,467.0 592.4,467.0" fill="#2F7A5A"/>
+<polygon points="491.9,492.5 496.4,501.0 487.4,501.0" fill="#2F7A5A"/>
+<polygon points="491.9,526.5 496.4,535.0 487.4,535.0" fill="#2F7A5A"/>
+<polygon points="444.2,560.5 448.7,569.0 439.7,569.0" fill="#2F7A5A"/>
+<polygon points="196.0,603.5 200.5,612.0 191.5,612.0" fill="#2F7A5A"/>
+<line x1="182" y1="608" x2="210" y2="608" stroke="#2F7A5A" stroke-width="2.4"/>
+<text class="lg" x="218" y="612">Вариант C «Тёплый локальный»</text>
+<line x1="182" y1="630" x2="210" y2="630" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 4"/>
+<text class="lg" x="218" y="634">Целевой профиль (задан до теста)</text>
+</svg>

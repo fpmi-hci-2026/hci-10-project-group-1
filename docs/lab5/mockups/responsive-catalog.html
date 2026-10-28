@@ -1,0 +1,22 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Каталог с фильтрами — шесть разрешений</title><style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,sans-serif;background:#2b2f36;color:#eceef1;padding:28px}
+h1{font-size:21px;font-weight:700;margin-bottom:6px}
+.lead{font-size:14px;color:#a9b0ba;margin-bottom:22px;max-width:860px;line-height:1.55}
+.row{display:flex;gap:22px;align-items:flex-start;overflow-x:auto;padding-bottom:14px}
+.item{flex:none}
+.cap{font-size:13px;margin-bottom:7px;display:flex;gap:8px;align-items:baseline}
+.cap b{font-weight:700}.cap span{color:#a9b0ba;font-size:12px}
+iframe{border:0;background:#fff;border-radius:10px;box-shadow:0 10px 28px #0006;display:block}
+.note{margin-top:18px;font-size:13px;color:#a9b0ba;line-height:1.6;max-width:860px}
+.note code{background:#3a3f48;padding:1px 6px;border-radius:5px}
+</style></head><body>
+<h1>Каталог с фильтрами — шесть разрешений</h1><div class="lead">Одна и та же страница <code>catalog.html</code> в шести ширинах монтажной области. Это не шесть отдельных макетов, а одна разметка с медиазапросами: перетаскивая край окна браузера, можно увидеть переходы между состояниями.</div>
+<div class="row"><div class="item"><div class="cap"><b>1440 px</b><span>1440+</span></div><iframe src="catalog.html" width="1440" height="1200" loading="lazy"></iframe></div>
+<div class="item"><div class="cap"><b>1024 px</b><span>992–1199</span></div><iframe src="catalog.html" width="1024" height="1200" loading="lazy"></iframe></div>
+<div class="item"><div class="cap"><b>768 px</b><span>768–991</span></div><iframe src="catalog.html" width="768" height="1200" loading="lazy"></iframe></div>
+<div class="item"><div class="cap"><b>600 px</b><span>576–767</span></div><iframe src="catalog.html" width="600" height="1200" loading="lazy"></iframe></div>
+<div class="item"><div class="cap"><b>414 px</b><span>400–575</span></div><iframe src="catalog.html" width="414" height="1200" loading="lazy"></iframe></div>
+<div class="item"><div class="cap"><b>360 px</b><span>320–399</span></div><iframe src="catalog.html" width="360" height="1200" loading="lazy"></iframe></div></div><div class="note">Расчёт сетки и перечень изменений — в <code>BREAKPOINTS.md</code>. Палитра переключается режимом переменных, тёмная тема — атрибутом <code>data-mode="dark"</code> на корневом элементе.</div></body></html>
