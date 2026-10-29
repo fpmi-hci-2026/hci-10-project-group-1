@@ -1,10 +1,33 @@
 # Обработка результатов сессий: data/*.csv → таблицы Markdown.
 # Запуск: python3 metrics.py > results.md
-import csv, math, statistics as st, sys, os
+import csv, json, math, statistics as st, sys, os
 from collections import defaultdict
 
 D = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-def rows(name): return list(csv.DictReader(open(os.path.join(D, name), encoding='utf-8')))
+def expand():
+    """Ответы страницы materials/test.html: data/responses.csv (выгрузка Google Таблицы, колонка с JSON)."""
+    f = os.path.join(D, 'responses.csv'); out = defaultdict(list)
+    if not os.path.exists(f): return out
+    for r in csv.reader(open(f, encoding='utf-8-sig')):
+        cell = next((c for c in r if c.startswith('{')), None)
+        if not cell: continue
+        j = json.loads(cell); pid, pl = j['id'], j['platform']
+        for t in j['tasks']:
+            out['sessions.csv'].append({'participant': pid, 'group': j['group'], 'platform': pl, 'task': t['task'],
+                                        'success': str(t['success']), 'time_s': str(t['time']), 'errors': str(t['errors'])})
+        if j.get('ctrl'):
+            out['sessions.csv'].append({'participant': pid, 'group': j['group'], 'platform': pl, 'task': 'CTRL',
+                                        'success': str(j['ctrl']['success']), 'time_s': str(j['ctrl']['time']), 'errors': '0'})
+        out['sus.csv'].append({'participant': pid, 'platform': pl, **{f'q{i+1}': str(v) for i, v in enumerate(j['sus'])}})
+        for c in j['cardsort']: out['cardsort.csv'].append({'participant': pid, 'platform': pl, 'question': c['q'], 'hit': str(c['hit'])})
+        for e in j['expect']: out['expectations.csv'].append({'participant': pid, 'platform': pl, 'element': e['e'], 'matches': str(e['hit'])})
+        for t in j['tree']:
+            out['treejack_raw.csv'].append({'participant': pid, 'platform': pl, 'task': t['task'], 'success': str(t['success']),
+                                            'direct': str(t['direct']), 'time_s': str(t['time']), 'answer': t['answer'], 'path': t['path']})
+    return out
+
+EXT = expand()
+def rows(name): return list(csv.DictReader(open(os.path.join(D, name), encoding='utf-8'))) + EXT[name]
 
 def wald(x, n, z=1.96):
     """Скорректированный интервал Вальда (Agresti–Coull) для доли успеха."""
