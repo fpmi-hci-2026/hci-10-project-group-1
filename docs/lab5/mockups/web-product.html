@@ -1,0 +1,76 @@
+<!doctype html><html lang="ru" data-mode="light"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Джинсы клёш с высокой посадкой — МаркетШоп.by</title>
+<link rel="stylesheet" href="web.css"/>
+<style>.pcols{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.gal>img{border-radius:14px;aspect-ratio:4/5;object-fit:cover;width:100%}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.thumbs img{border-radius:10px;aspect-ratio:1;object-fit:cover}
+.pbr{font-size:12px;font-weight:600;letter-spacing:.05em;color:var(--text-muted)}
+.prt{font-size:14px;color:var(--text-muted);margin:8px 0}
+.fitchip{background:var(--warning-soft);color:var(--warning);border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;margin-left:6px}
+.ppr{font-size:30px;font-weight:700;margin-bottom:20px}
+.dsc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.dsc dl{display:grid;grid-template-columns:200px 1fr;gap:10px 16px;font-size:15px}
+.dsc dt{color:var(--text-muted)}
+.szh{display:flex;justify-content:space-between;font-weight:600;margin-bottom:10px}
+.szl{display:flex;gap:8px;margin-bottom:20px}
+.szl button{min-width:56px;height:48px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);font:600 15px Inter,sans-serif;cursor:pointer}
+.szl button.on{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.szl button.off{opacity:.4;text-decoration:line-through;cursor:default}
+.ret{font-size:14px;margin-top:10px;text-align:center}
+.ov{display:none;position:fixed;inset:0;background:rgb(0 0 0 / .45);align-items:center;justify-content:center}
+.ov:target{display:flex}
+.modal{width:520px;position:relative}
+.modal .muted{margin-bottom:18px;font-size:15px}
+.modal .note{margin-bottom:16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.close{position:absolute;top:14px;right:14px;width:44px;height:44px;display:flex;align-items:center;justify-content:center}</style></head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="catalog.html">МаркетШоп<i>.by</i></a>
+  <div class="search">⌕ <span>Платье, кроссовки, бренд…</span></div>
+  <nav class="util"><a href="#"><b>♡</b><span>Избранное</span></a>
+    <a href="web-cart.html"><b>▤</b><span>Корзина</span></a><a href="#"><b>☺</b><span>Профиль</span></a></nav>
+</div></header>
+<main class="page">
+  <div class="crumbs"><a href="catalog.html">Женщинам · Одежда</a> · Джинсы</div>
+  <div class="pcols">
+    <div class="gal"><img src="img/hero-1.jpg" alt="Джинсы клёш с высокой посадкой"/>
+      <div class="thumbs"><img src="img/hero-2.jpg" alt=""/><img src="img/hero-3.jpg" alt=""/><img src="img/hero-4.jpg" alt=""/></div></div>
+    <div>
+      <div class="pbr">DENIM.BY</div>
+      <h1>Джинсы клёш с высокой посадкой</h1>
+      <div class="prt">★ <b>4.5</b> · 86 отзывов <span class="fitchip">Маломерит · 58%</span></div>
+      <div class="ppr">119,00 р.</div>
+      <div class="dsc"><h2>Описание</h2><dl>
+        <dt>Состав</dt><dd>Хлопок 98%, эластан 2%</dd>
+        <dt>Посадка</dt><dd>Высокая посадка, облегает по бедру, расклешённые от колена; длина в пол</dd>
+        <dt>Уход</dt><dd>Машинная стирка 30 °C, стирать наизнанку, не отбеливать, глажка при средней температуре</dd>
+        <dt>Размерная сетка бренда</dt><dd>Бренд маломерит на полразмера: при обхвате бёдер 96 см берите 46</dd></dl></div>
+      <div class="szh">Размер <a class="lnk" href="#assistant" id="open-asis">Подобрать размер</a></div>
+      <div class="szl" role="radiogroup" aria-label="Размер">
+        <button class="off" disabled>40</button><button>42</button><button class="on">44</button><button>46</button><button>48</button><button class="off" disabled>50</button></div>
+      <a class="btn" href="web-cart.html">В корзину · 119,00 р.</a>
+      <p class="muted ret">Возврат в течение 14 дней · самовывоз бесплатно</p>
+    </div>
+  </div>
+</main>
+<div class="ov" id="assistant" role="dialog" aria-modal="true" aria-labelledby="asis-h"><form class="modal panel" action="#">
+  <a class="close" href="#" aria-label="Закрыть">✕</a>
+  <h2 id="asis-h">Ассистент по размеру</h2>
+  <p class="muted">Укажите параметры — подберём размер и не придётся оформлять возврат</p>
+  <div class="two"><div class="fld"><label for="h">Рост, см</label><input id="h" inputmode="numeric" value=""/></div>
+  <div class="fld"><label for="hip">Обхват бёдер, см</label><input id="hip" inputmode="numeric" value=""/></div></div>
+  <div class="note" id="res" hidden>Вам подойдёт размер 46. Бренд маломерит на полразмера: при обхвате бёдер 96 см берите 46</div>
+  <button class="btn" id="pick" type="button">Подобрать размер</button>
+</form></div>
+<script>
+// Ассистент: ввод мерок → рекомендация → выбор размера в карточке
+const res=document.getElementById('res'), pick=document.getElementById('pick');
+pick.onclick=()=>{ if(res.hidden){res.hidden=false;pick.textContent='Выбрать 46';}
+  else{document.querySelectorAll('.szl button').forEach(b=>b.classList.toggle('on',b.textContent==='46'));location.hash='';} };
+document.getElementById('open-asis').addEventListener('click',()=>setTimeout(()=>document.getElementById('h').focus(),0));
+document.querySelectorAll('.szl button:not(.off)').forEach(b=>b.onclick=()=>document.querySelectorAll('.szl button').forEach(x=>x.classList.toggle('on',x===b)));
+</script>
+</body></html>

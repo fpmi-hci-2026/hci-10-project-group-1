@@ -1,0 +1,53 @@
+<!doctype html><html lang="ru" data-mode="light"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Оформление заказа — МаркетШоп.by</title>
+<link rel="stylesheet" href="web.css"/>
+<style>h1{margin-bottom:20px}
+.ccols{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.ccols>div{display:flex;flex-direction:column;gap:16px}
+.ci{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.ci:last-child{border-bottom:0}
+.ci img{border-radius:8px;aspect-ratio:3/4;object-fit:cover}
+.sum{position:sticky;top:24px;display:flex;flex-direction:column;gap:12px}
+.sum>div{display:flex;justify-content:space-between;font-size:15px}
+.sum .free{color:var(--success);font-weight:600}
+.sum .tot{font-size:20px;font-weight:700;border-top:1px solid var(--border);padding-top:12px}
+.small{font-size:13px}</style></head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="catalog.html">МаркетШоп<i>.by</i></a>
+  <div class="search">⌕ <span>Платье, кроссовки, бренд…</span></div>
+  <nav class="util"><a href="#"><b>♡</b><span>Избранное</span></a>
+    <a href="web-cart.html"><b>▤</b><span>Корзина <span class="cnt">2</span></span></a><a href="#"><b>☺</b><span>Профиль</span></a></nav>
+</div></header>
+<main class="page">
+  <h1>Оформление заказа</h1>
+  <form class="ccols" action="web-done.html">
+    <div>
+      <section class="panel"><h2>Товары</h2>
+        <div class="ci"><img src="img/hero-1.jpg" alt=""/><div><b>Джинсы клёш с высокой посадкой</b><div class="muted">DENIM.BY · размер 46</div></div><b>119,00 р.</b></div>
+        <div class="ci"><img src="img/feed-1.jpg" alt=""/><div><b>Платье-свитер миди</b><div class="muted">Conte · размер 46</div></div><b>149,00 р.</b></div>
+      </section>
+      <section class="panel"><h2>Получение</h2>
+        <label class="radio"><input type="radio" name="dlv" checked/> Пункт самовывоза — бесплатно</label>
+        <div class="fld"><label for="pvz">Пункт выдачи</label>
+          <select id="pvz"><option>ул. Немига, 5 — до 30 октября</option><option>пр-т Независимости, 58 — до 31 октября</option><option>ул. Притыцкого, 156 — до 31 октября</option></select></div>
+        <label class="radio"><input type="radio" name="dlv"/> Курьером — 7,00 р.</label>
+      </section>
+      <section class="panel"><h2>Оплата</h2>
+        <label class="radio"><input type="radio" name="pay" checked/> Банковская карта онлайн</label>
+        <label class="radio"><input type="radio" name="pay"/> Наличными при получении</label>
+        <label class="radio"><input type="radio" name="pay"/> ЕРИП</label>
+      </section>
+    </div>
+    <aside class="panel sum">
+      <div><span>Товары, 2 шт.</span><span>268,00 р.</span></div>
+      <div><span>Доставка</span><span class="free">бесплатно</span></div>
+      <div><span>Срок возврата</span><span>14 дней</span></div>
+      <div class="tot"><span>К оплате</span><span>268,00 р.</span></div>
+      <button class="btn" type="submit">Оформить заказ</button>
+      <p class="muted small">Получатель: Анастасия, +375 29 123-45-67 · <a class="lnk" href="#">Изменить</a></p>
+    </aside>
+  </form>
+</main>
+</body></html>
