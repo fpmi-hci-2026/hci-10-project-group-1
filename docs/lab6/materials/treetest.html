@@ -1,0 +1,140 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Тестирование дерева — МаркетШоп.by</title>
+<style>
+:root{--brand:#3E3228;--accent:#A8462A;--soft:#F7E6DF;--bg:#FAF6EF;--line:#E8DFD2;--muted:#6F6459}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 Inter,system-ui,sans-serif;background:var(--bg);color:#2A231C}
+header{background:var(--brand);color:#fff;padding:12px 16px;font-weight:600}
+main{max-width:640px;margin:0 auto;padding:16px}
+.task{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.task small{color:var(--muted)}
+.task p{margin:4px 0 0;font-size:18px;font-weight:600}
+ul{list-style:none;margin:0;padding:0}
+li ul{padding-left:20px}
+.node{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;margin:2px 0;border:0;border-radius:8px;background:none;font:inherit;text-align:left;cursor:pointer;color:inherit}
+.node:hover{background:var(--soft)}
+.node .ch{width:14px;color:var(--muted)}
+.node.sel{background:var(--soft);font-weight:600}
+.pick{margin:2px 0 6px 32px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:600 15px Inter,system-ui,sans-serif;padding:10px 14px;cursor:pointer}
+.btn{border:0;border-radius:10px;background:var(--accent);color:#fff;font:600 16px Inter,system-ui,sans-serif;padding:12px 18px;cursor:pointer;min-height:48px}
+.btn.sec{background:#fff;color:#2A231C;border:1px solid #A38A67}
+input,select{font:inherit;padding:10px;border:1px solid #A38A67;border-radius:8px;width:100%;margin:4px 0 12px}
+.skip{margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+td,th{border:1px solid var(--line);padding:4px 6px;text-align:left}
+textarea{width:100%;height:160px;font:12px ui-monospace,monospace}
+.hidden{display:none}
+</style></head><body>
+<header>Поиск по структуре сайта</header>
+<main>
+  <section id="start" class="task">
+    <p>Перед началом (заполняет ведущий)</p>
+    <label>Код участника<input id="pid" placeholder="P1"/></label>
+    <label>Платформа<select id="plat"><option value="web">веб</option><option value="mobile">мобильное</option></select></label>
+    <button class="btn" id="go">Начать</button>
+    <p style="font-size:15px;font-weight:400;margin-top:12px">Участнику: «Вы увидите задание и список разделов магазина. Нажимайте на разделы, чтобы открыть их. Когда найдёте место, где стали бы искать, нажмите „Я бы искал(а) здесь“. Можно возвращаться. Если не знаете — „Пропустить“.»</p>
+  </section>
+  <section id="run" class="hidden">
+    <div class="task"><small id="num"></small><p id="text"></p></div>
+    <ul id="tree"></ul>
+    <button class="btn sec skip" id="skip">Пропустить задание</button>
+  </section>
+  <section id="done" class="hidden">
+    <div class="task"><p>Готово, спасибо!</p></div>
+    <table id="res"></table>
+    <p>Строки для <code>data/treejack_raw.csv</code>:</p>
+    <textarea id="csv" readonly></textarea>
+    <button class="btn" id="dl">Скачать CSV</button>
+  </section>
+</main>
+<script>
+// Задания и правильные пути совпадают с исследованиями в Optimal Workshop и таблицей 6 отчёта
+const TASKS = [
+  ['J1', 'Вы хотите вернуть платье, купленное неделю назад', {web: 'Профиль/Возврат и обмен/Оформить возврат', mobile: 'Профиль/Возврат и обмен/Оформить возврат'}],
+  ['J2', 'Узнайте, сколько дней даётся на возврат товара', {web: 'Справка/Возврат и обмен: правила и сроки', mobile: 'Профиль/Справка/Возврат и обмен: правила и сроки'}],
+  ['J3', 'Найдите женские зимние сапоги', {web: 'Каталог/Женское/Обувь/Сапоги', mobile: 'Главная/Каталог/Женское/Обувь/Сапоги'}],
+  ['J4', 'Сохраните свои мерки, чтобы получать подходящие размеры', {web: 'Профиль/Профиль и параметры размера/Мои мерки', mobile: 'Профиль/Профиль и параметры размера/Мои мерки'}],
+  ['J5', 'Сравните две отложенные куртки', {web: 'Избранное/Сравнение товаров', mobile: 'Избранное/Сравнение товаров'}],
+  ['J6', 'Найдите одежду белорусских производителей', {web: 'Каталог/Сделано в Беларуси', mobile: 'Главная/Каталог/Сделано в Беларуси'}],
+];
+const $ = id => document.getElementById(id);
+let tree, plat, pid, order, ti, t0, clicks, backtracks, results = [];
+
+function parse(txt) {
+  // строки с отступом табуляцией; первая строка — корень
+  const root = {name: '', kids: []}, stack = [[-1, root]];
+  for (const line of txt.split('\n').slice(1)) {
+    if (!line.trim()) continue;
+    const lvl = line.match(/^\t*/)[0].length, node = {name: line.trim(), kids: []};
+    while (stack.at(-1)[0] >= lvl) stack.pop();
+    stack.at(-1)[1].kids.push(node); stack.push([lvl, node]);
+  }
+  return root.kids;
+}
+function render(nodes, ul, path) {
+  ul.innerHTML = '';
+  for (const n of nodes) {
+    const li = document.createElement('li'), p = path ? path + '/' + n.name : n.name;
+    const b = document.createElement('button'); b.className = 'node';
+    b.innerHTML = `<span class="ch">${n.kids.length ? '›' : ''}</span>${n.name}`;
+    b.onclick = () => click(n, p, li, b);
+    li.append(b); ul.append(li);
+  }
+}
+let lastPath = '';
+function click(n, p, li, b) {
+  // возврат: переход не к потомку последнего открытого узла
+  if (lastPath && !p.startsWith(lastPath + '/')) backtracks++;
+  clicks.push(n.name); lastPath = p;
+  document.querySelectorAll('.pick').forEach(x => x.remove());
+  document.querySelectorAll('.node.sel').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel');
+  const open = li.querySelector(':scope > ul');
+  if (n.kids.length) {
+    if (open) { open.remove(); return; }
+    // в каждый момент раскрыта одна ветка, как в TreeJack
+    li.parentElement.querySelectorAll(':scope > li > ul').forEach(u => u.remove());
+    const ul = document.createElement('ul'); render(n.kids, ul, p); li.append(ul);
+  } else {
+    const k = document.createElement('button'); k.className = 'pick'; k.textContent = 'Я бы искал(а) здесь';
+    k.onclick = () => finish(p); b.after(k);
+  }
+}
+function next() {
+  if (ti >= order.length) return end();
+  const [id, text] = TASKS[order[ti]];
+  $('num').textContent = `Задание ${ti + 1} из ${order.length}`; $('text').textContent = text;
+  clicks = []; backtracks = 0; lastPath = ''; render(tree, $('tree'), ''); t0 = performance.now();
+  window.scrollTo(0, 0);
+}
+function finish(answer) {
+  const [id, , right] = TASKS[order[ti]], ok = answer === right[plat];
+  results.push({pid, plat, id, success: ok ? 1 : 0, direct: ok && backtracks === 0 ? 1 : 0,
+    time: ((performance.now() - t0) / 1000).toFixed(1), answer: answer || 'пропуск', path: clicks.join(' > ')});
+  ti++; next();
+}
+function end() {
+  $('run').classList.add('hidden'); $('done').classList.remove('hidden');
+  results.sort((a, b) => a.id.localeCompare(b.id));
+  $('res').innerHTML = '<tr><th>Задание</th><th>Успех</th><th>Прямо</th><th>Время, с</th><th>Ответ</th></tr>' +
+    results.map(r => `<tr><td>${r.id}</td><td>${r.success ? 'да' : 'нет'}</td><td>${r.direct ? 'да' : 'нет'}</td><td>${r.time}</td><td>${r.answer}</td></tr>`).join('');
+  const q = s => '"' + String(s).replace(/"/g, '""') + '"';
+  $('csv').value = results.map(r => [r.pid, r.plat, r.id, r.success, r.direct, r.time, q(r.answer), q(r.path)].join(',')).join('\n');
+  try { localStorage.setItem('treetest-' + pid + '-' + plat, $('csv').value); } catch (e) {}
+}
+$('skip').onclick = () => finish('');
+$('dl').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + $('csv').value + '\n'], {type: 'text/csv'}));
+  a.download = `treetest-${pid}-${plat}.csv`; a.click();
+};
+$('go').onclick = async () => {
+  pid = $('pid').value.trim() || 'P?'; plat = $('plat').value;
+  tree = parse(await (await fetch(`tree-${plat}.txt`)).text());
+  order = TASKS.map((_, i) => i).sort(() => Math.random() - .5); ti = 0;
+  $('start').classList.add('hidden'); $('run').classList.remove('hidden'); next();
+};
+const qp = new URLSearchParams(location.search).get('p'); if (qp) $('plat').value = qp;
+</script>
+</body></html>
