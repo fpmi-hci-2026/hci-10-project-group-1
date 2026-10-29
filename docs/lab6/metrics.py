@@ -47,9 +47,12 @@ for name, col, title in (('cardsort.csv', 'question', 'Вопрос'), ('expecta
     for r in R: g[(r['platform'], r[col])].append(r[key] == '1')
     for (pl, k), v in sorted(g.items()):
         out.append(f'| {pl} | {k} | {sum(v)}/{len(v)} ({sum(v)/len(v):.0%}) |')
-J = rows('treejack.csv')
+J = rows('treejack_raw.csv')
 if J:
-    out.append('\n| Платформа | Задание | Успех, % | Прямота, % | Время, с (медиана) |\n|---|---|---|---|---|')
-    for r in J:
-        out.append(f"| {r['platform']} | {r['task']} | {r['success_pct']} | {r['directness_pct']} | {r['median_time_s']} |")
+    out.append('\n| Платформа | Задание | Участников | Успех | Прямота | Время, с (медиана) |\n|---|---|---|---|---|---|')
+    g = defaultdict(list)
+    for r in J: g[(r['platform'], r['task'])].append(r)
+    for (pl, t), rs in sorted(g.items()):
+        n = len(rs); s_ = sum(int(r['success']) for r in rs); d = sum(int(r['direct']) for r in rs)
+        out.append(f"| {pl} | {t} | {n} | {s_/n:.0%} | {d/n:.0%} | {st.median(float(r['time_s']) for r in rs):.0f} |")
 print('\n'.join(out) if out else 'Данных пока нет: заполните файлы в data/.')
