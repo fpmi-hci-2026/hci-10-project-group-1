@@ -27,15 +27,22 @@ ul.tree{list-style:none;margin:0;padding:0} ul.tree ul{list-style:none;padding-l
 .node{display:flex;gap:8px;width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:8px;background:none;font:inherit;text-align:left;cursor:pointer;color:inherit}
 .node:hover{background:var(--soft)} .node.sel{background:var(--soft);font-weight:600} .node .ch{width:12px;color:var(--muted)}
 .pick{margin:2px 0 6px 30px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:600 15px Inter,system-ui,sans-serif;padding:10px 14px;cursor:pointer}
-.task{position:sticky;top:0;z-index:2;background:#fff;border:2px solid var(--accent);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;justify-content:space-between}
-.proto{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff;display:block}
+.task{background:#fff;border:2px solid var(--accent);border-radius:12px;padding:8px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex:none}
+.task .q{font-size:16px;line-height:1.3}
+.task .btn.sec{min-height:40px;padding:6px 12px;font-size:14px;flex:none}
+.sticky{position:sticky;top:0;z-index:2;box-shadow:0 4px 12px rgb(0 0 0/.08)}
+body.full{height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+body.full main{flex:1;display:flex;flex-direction:column;min-height:0;width:100%;padding:8px}
+body.full #app{flex:1;display:flex;flex-direction:column;min-height:0}
+body.full .proto{flex:1;height:auto;min-height:0}
+.proto{width:100%;height:78vh;flex:1;border:1px solid var(--line);border-radius:12px;background:#fff;display:block}
 .sus{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}
 .sus .opts button{min-width:44px;padding:6px}
 .sus .opts button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
 input[type=number]{font:inherit;padding:10px;border:1px solid #A38A67;border-radius:8px;width:120px}
 .hidden{display:none!important}
-@media (max-width:640px){.sus{grid-template-columns:1fr}.task{flex-direction:column;align-items:stretch}}
+@media (max-width:640px){.sus{grid-template-columns:1fr}main{padding:10px}.card{padding:12px}.opts button{min-width:44px;padding:6px 10px}}
 </style></head><body>
 <header><span>Тест интерфейса · МаркетШоп.by</span><span id="step"></span></header>
 <main id="app"></main>
@@ -83,11 +90,12 @@ const CSQ = [ // вопрос, ожидаемый номер: веб, мобил
   ['Q6', 'Где узнать, маломерит ли модель?', 10, 3]];
 async function cardsort() {
   step(1);
-  html(`<div class="card"><h2>Где бы вы это искали?</h2><p class="muted">На экране магазина пронумерованы области. Нажмите номер области, где стали бы искать.</p></div>
-  <div class="card"><p class="q" id="csq"></p><div class="opts" id="csn"></div></div>
+  html(`<div class="card sticky"><p class="muted" style="margin:0 0 4px">На экране магазина ниже пронумерованы области. Нажмите номер, где стали бы искать.</p><p class="q" id="csq"></p><div class="opts" id="csn"></div></div>
   <div class="shot" id="shot"><div class="inner" id="inner"><iframe id="f" scrolling="no"></iframe></div></div>`);
   const shot = $('#shot'), inner = $('#inner'), f = $('#f');
-  const sc = Math.min(1, (shot.clientWidth) / CS.w);
+  const fitW = Math.min(1, shot.clientWidth / CS.w), top = app.querySelector('.sticky').offsetHeight + 60;
+  const sc = Math.min(fitW, Math.max((innerHeight - top) / CS.h, fitW * 0.6));
+  shot.style.width = CS.w * sc + 2 + 'px'; shot.style.marginLeft = 'auto'; shot.style.marginRight = 'auto';
   f.width = CS.w; f.height = CS.h; inner.style.transform = `scale(${sc})`; shot.style.height = CS.h * sc + 'px';
   await new Promise(r => { f.onload = r; f.src = CS.src; });
   const d = f.contentDocument;
@@ -186,8 +194,10 @@ async function tasks() {
   step(4);
   html(`<div class="card"><h2>Задания</h2><p>Сейчас откроется магазин. Сверху будет задание — выполните его в магазине. Как только справитесь, следующее задание появится само. Если не получается — «Пропустить».</p><button class="btn" id="go">Начать</button></div>`);
   await new Promise(r => $('#go').onclick = r);
+  document.body.classList.add('full');
   html(`<div class="task"><div><span class="muted" id="tn"></span><div class="q" id="tt" style="margin:0"></div><div id="extra"></div></div><button class="btn sec" id="skip">Пропустить</button></div>
   <iframe class="proto" id="pf" style="${P === 'mobile' && innerWidth > 700 ? 'max-width:400px;margin:0 auto' : ''}"></iframe>`);
+  $('#tn').parentElement.style.minWidth = '0';
   const pf = $('#pf'); let loads = 0, sizeOk = false, onLoad = () => {};
   pf.onload = () => {
     loads++;
@@ -204,7 +214,7 @@ async function tasks() {
     $('#tn').textContent = `Задание ${i + 1} из ${TK.length}`; $('#tt').textContent = text; $('#extra').innerHTML = '';
     if (id === 'T2') ctrl0 = now();
     const t0 = now(), l0 = loads; let done = null;
-    if (goal === 'ret') $('#extra').innerHTML = `<div style="margin-top:8px">Ответ: <input type="number" id="days" min="0"/> дней <button class="btn" id="ok" style="min-height:40px;padding:8px 14px">Ответить</button></div>`;
+    if (goal === 'ret') $('#extra').innerHTML = `<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">Ответ: <input type="number" id="days" min="0" style="width:80px;padding:6px"/> дней <button class="btn" id="ok" style="min-height:36px;padding:6px 12px;font-size:14px">Ответить</button></div>`;
     sizeOk = false;
     const res = await new Promise(resolve => {
       const check = () => {
@@ -233,6 +243,7 @@ async function tasks() {
 /* ---------- 5. SUS ---------- */
 const SUS = ['Я хотел(а) бы пользоваться этим магазином часто', 'Магазин показался мне излишне сложным', 'Магазином было легко пользоваться', 'Мне понадобилась бы помощь, чтобы им пользоваться', 'Функции магазина хорошо связаны между собой', 'В магазине слишком много несогласованности', 'Большинство людей быстро научатся им пользоваться', 'Пользоваться магазином очень неудобно', 'Я чувствовал(а) себя уверенно', 'Мне пришлось многому научиться, прежде чем начать'];
 async function sus() {
+  document.body.classList.remove('full');
   step(5);
   html(`<div class="card"><h2>Последний шаг: ваша оценка</h2><div class="scale"><span>1 — совсем не согласен(на)</span><span>5 — полностью согласен(на)</span></div>
   <div class="sus">${SUS.map((s, i) => `<div>${s}</div><div class="opts" data-i="${i}">${[1, 2, 3, 4, 5].map(v => `<button data-v="${v}">${v}</button>`).join('')}</div>`).join('')}</div>

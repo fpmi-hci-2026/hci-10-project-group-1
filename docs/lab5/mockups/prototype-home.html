@@ -447,14 +447,15 @@ h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
 .done p{color:var(--text-muted);margin-top:9px;font-size:15px;line-height:1.5}
 .done .num{margin-top:16px;font-family:ui-monospace,monospace;font-size:15px;font-weight:600}
 
+.mgrid .fav{top:auto;bottom:10px}
+.cats a{flex:none}
 </style></head><body>
 <header class="mtop">
   <div class="r1"><div class="logo">МаркетШоп<i>.by</i></div>
     <div><span class="ic">♡</span> &nbsp; <span class="ic">▤</span></div></div>
   <div class="msearch">⌕ Платье, кроссовки, бренд…</div>
 </header>
-<div class="cats"><b class="on">Для вас</b><b>Новинки</b><b>Платья</b><b>Обувь</b>
-  <b>Сделано в Беларуси</b><b>Распродажа</b></div>
+<div class="cats"><a href="#filters"><b>⚙ Фильтры</b></a><b class="on">Для вас</b><b>Сделано в Беларуси</b><b>Новинки</b><b>Платья</b><b>Обувь</b><b>Распродажа</b></div>
 <div class="greet"><h2>Специально для вас</h2>
   <p>Подобрано по размеру 46, любимым категориям и сезону</p></div>
 <div class="mgrid"><a class="card" href="prototype-product.html">
@@ -515,4 +516,22 @@ h1{font-size:30px;font-weight:700;letter-spacing:-.01em}
     <div class="cart">В корзину</div></div></a></div>
 <nav class="bn"><a class="on" href="prototype-home.html"><b>⌂</b>Главная</a><a class="" href="catalog.html"><b>⌕</b>Поиск</a><a class="" href="#"><b>♡</b>Избранное</a><a class="" href="prototype-cart.html"><b>▤</b>Корзина</a><a class="" href="#"><b>☺</b>Профиль</a></nav>
 <script>(function(){var m=new URLSearchParams(location.search).get('mode');document.documentElement.dataset.mode=m==='dark'?'dark':'light';})();</script>
+<div class="ov" id="filters"><div class="sheet"><div class="wrap">
+  <a class="close" href="#">✕</a>
+  <h3>Фильтры</h3>
+  <div class="szs"><div class="h">Размер</div>
+    <div class="szl multi"><b>42</b><b>44</b><b class="on">46</b><b>48</b><b>50</b></div></div>
+  <div class="pay multi"><h4>Особенности</h4>
+    <label class="on"><i></i>Сделано в Беларуси</label>
+    <label><i></i>Со скидкой</label>
+    <label><i></i>Есть в наличии</label></div>
+  <a class="btn" href="#">Показать 128 товаров</a>
+</div></div></div>
+<script>
+// выбор варианта в группе: пункт выдачи, способ оплаты, фильтры
+document.querySelectorAll('.pay label, .szl b:not(.off)').forEach(l => l.addEventListener('click', () => {
+  if (l.parentElement.classList.contains('multi')) return l.classList.toggle('on');
+  l.parentElement.querySelectorAll(':scope > label, :scope > b').forEach(x => x.classList.toggle('on', x === l));
+}));
+</script>
 </body></html>
