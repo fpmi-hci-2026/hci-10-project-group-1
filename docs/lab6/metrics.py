@@ -11,7 +11,9 @@ def expand():
     for r in csv.reader(open(f, encoding='utf-8-sig')):
         cell = next((c for c in r if c.startswith('{')), None)
         if not cell: continue
-        j = json.loads(cell); pid, pl = j['id'], j['platform']
+        j = json.loads(cell)
+        if 'tasks' not in j: continue  # служебные записи без результатов
+        pid, pl = j['id'], j['platform']
         for t in j['tasks']:
             out['sessions.csv'].append({'participant': pid, 'group': j['group'], 'platform': pl, 'task': t['task'],
                                         'success': str(t['success']), 'time_s': str(t['time']), 'errors': str(t['errors'])})

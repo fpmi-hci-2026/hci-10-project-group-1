@@ -42,7 +42,7 @@ input[type=number]{font:inherit;padding:10px;border:1px solid #A38A67;border-rad
 <script>
 /* Самостоятельное прохождение тестов ЛР№6: карточная сортировка → дерево → ожидания → задания в прототипе → SUS.
    Результат отправляется одной строкой JSON в Google Форму. */
-const FORM = {action: '', field: ''}; // заполняется адресом формы и id поля
+const FORM = {action: 'https://docs.google.com/forms/d/e/1FAIpQLSfoGTnlY2olAtOMeWOxdocyp23jW3rpvh9RYSOSLLmVM-1Y4g/formResponse', field: 'entry.2084043503'};
 const P = new URLSearchParams(location.search).get('p') || (innerWidth < 700 ? 'mobile' : 'web');
 const M = '../../lab5/mockups/';
 const R = {v: 1, id: Math.random().toString(36).slice(2, 8).toUpperCase(), platform: P, started: new Date().toISOString(),
