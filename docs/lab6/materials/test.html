@@ -1,0 +1,267 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Тест интерфейса магазина — 5 минут</title>
+<style>
+:root{--brand:#3E3228;--accent:#A8462A;--soft:#F7E6DF;--bg:#FAF6EF;--line:#E8DFD2;--muted:#6F6459;--ok:#5A7038}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 Inter,system-ui,sans-serif;background:var(--bg);color:#2A231C}
+header{background:var(--brand);color:#fff;padding:10px 16px;display:flex;justify-content:space-between;font-size:14px}
+main{max-width:960px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+h1{font-size:22px;margin:0 0 8px} h2{font-size:18px;margin:0 0 6px}
+.q{font-size:18px;font-weight:600;margin:0 0 10px}
+.muted{color:var(--muted);font-size:14px}
+.btn{border:0;border-radius:10px;background:var(--accent);color:#fff;font:600 16px Inter,system-ui,sans-serif;padding:12px 18px;cursor:pointer;min-height:48px}
+.btn.sec{background:#fff;color:#2A231C;border:1px solid #A38A67}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{min-width:52px;min-height:48px;border:1px solid #A38A67;border-radius:10px;background:#fff;font:600 16px Inter,system-ui,sans-serif;cursor:pointer;padding:8px 14px}
+.opts.col{flex-direction:column}.opts.col button{text-align:left;font-weight:400}
+.opts button:hover{background:var(--soft)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:0 0 12px}.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.shot{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:12px}
+.shot .inner{position:absolute;left:0;top:0;transform-origin:0 0}
+.shot iframe{border:0;display:block;pointer-events:none}
+.n{position:absolute;width:30px;height:30px;border-radius:50%;background:#1f6feb;color:#fff;font:700 16px system-ui;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff;transform:translate(-50%,-50%)}
+.box{position:absolute;border:3px solid #1f6feb;border-radius:8px}
+ul.tree{list-style:none;margin:0;padding:0} ul.tree ul{list-style:none;padding-left:20px;margin:0}
+.node{display:flex;gap:8px;width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:8px;background:none;font:inherit;text-align:left;cursor:pointer;color:inherit}
+.node:hover{background:var(--soft)} .node.sel{background:var(--soft);font-weight:600} .node .ch{width:12px;color:var(--muted)}
+.pick{margin:2px 0 6px 30px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:600 15px Inter,system-ui,sans-serif;padding:10px 14px;cursor:pointer}
+.task{position:sticky;top:0;z-index:2;background:#fff;border:2px solid var(--accent);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.proto{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff;display:block}
+.sus{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}
+.sus .opts button{min-width:44px;padding:6px}
+.sus .opts button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+input[type=number]{font:inherit;padding:10px;border:1px solid #A38A67;border-radius:8px;width:120px}
+.hidden{display:none!important}
+@media (max-width:640px){.sus{grid-template-columns:1fr}.task{flex-direction:column;align-items:stretch}}
+</style></head><body>
+<header><span>Тест интерфейса · МаркетШоп.by</span><span id="step"></span></header>
+<main id="app"></main>
+<script>
+/* Самостоятельное прохождение тестов ЛР№6: карточная сортировка → дерево → ожидания → задания в прототипе → SUS.
+   Результат отправляется одной строкой JSON в Google Форму. */
+const FORM = {action: 'https://docs.google.com/forms/d/e/1FAIpQLSfoGTnlY2olAtOMeWOxdocyp23jW3rpvh9RYSOSLLmVM-1Y4g/formResponse', field: 'entry.2084043503'};
+const P = new URLSearchParams(location.search).get('p') || (innerWidth < 700 ? 'mobile' : 'web');
+const M = '../../lab5/mockups/';
+const R = {v: 1, id: Math.random().toString(36).slice(2, 8).toUpperCase(), platform: P, started: new Date().toISOString(),
+  ua: navigator.userAgent, screen: innerWidth + 'x' + innerHeight, group: '', cardsort: [], tree: [], expect: [], tasks: [], ctrl: null, sus: []};
+const $ = s => document.querySelector(s), app = $('#app');
+const shuffle = a => a.map(x => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const now = () => performance.now();
+const STEPS = ['Начало', 'Где это?', 'Поиск раздела', 'Что это значит?', 'Задания', 'Оценка'];
+const step = i => $('#step').textContent = `Шаг ${i + 1} из ${STEPS.length}`;
+const html = (s) => { app.innerHTML = s; scrollTo(0, 0); };
+const choose = (sel) => new Promise(res => app.querySelectorAll(sel).forEach(b => b.onclick = () => res(b.dataset.v)));
+
+/* ---------- 0. Начало ---------- */
+async function intro() {
+  step(0);
+  html(`<div class="card"><h1>Помогите проверить интернет-магазин одежды</h1>
+  <p>Это прототип, а не настоящий магазин: ничего покупать и вводить о себе не нужно. Проверяем не вас, а удобство интерфейса — ошибиться невозможно. Займёт 5–7 минут.</p>
+  <p class="muted">${P === 'web' ? 'Вы проходите версию для компьютера.' : 'Вы проходите версию для телефона.'}</p></div>
+  <div class="card"><p class="q">Как вы обычно покупаете одежду онлайн?</p><div class="opts col">
+  <button data-v="осознанная">Внимательно изучаю описание, состав, отзывы</button>
+  <button data-v="быстрый">Покупаю быстро, если вещь понравилась</button>
+  <button data-v="новичок">Покупаю онлайн редко или боюсь ошибиться с размером</button></div></div>`);
+  R.group = await choose('.opts button');
+}
+
+/* ---------- 1. Карточная сортировка: экран с номерами ---------- */
+const CS = {
+  web: {src: M + 'catalog.html', w: 1440, h: 860, areas: [[1, '.search'], [2, '.util > div:nth-child(1)'], [3, '.util > a'], [4, '.util > div:nth-child(3)'], [5, '.nav .g:nth-of-type(1)'], [6, '.nav .g:nth-of-type(2)'], [7, '.nav .bel'], [8, '.side'], [9, '.sort'], [10, '.grid .card:nth-child(4)']]},
+  mobile: {src: M + 'prototype-home.html', w: 390, h: 780, areas: [[1, '.msearch'], [2, '.cats'], [3, '.mgrid .card:nth-child(1)'], [4, '.bn a:nth-child(1)'], [5, '.bn a:nth-child(2)'], [6, '.bn a:nth-child(3)'], [7, '.bn a:nth-child(4)'], [8, '.bn a:nth-child(5)']]},
+}[P];
+const CSQ = [ // вопрос, ожидаемый номер: веб, мобильное
+  ['Q1', 'Где вы посмотрите свои прошлые заказы?', 4, 8],
+  ['Q2', 'Где найти вещи белорусских брендов?', 7, 2],
+  ['Q3', 'Где найти товары, подобранные лично для вас?', 6, 2],
+  ['Q4', 'Где сравнить два понравившихся платья?', 2, 6],
+  ['Q5', 'Как показать только вещи 46-го размера?', 8, 1],
+  ['Q6', 'Где узнать, маломерит ли модель?', 10, 3]];
+async function cardsort() {
+  step(1);
+  html(`<div class="card"><h2>Где бы вы это искали?</h2><p class="muted">На экране магазина пронумерованы области. Нажмите номер области, где стали бы искать.</p></div>
+  <div class="card"><p class="q" id="csq"></p><div class="opts" id="csn"></div></div>
+  <div class="shot" id="shot"><div class="inner" id="inner"><iframe id="f" scrolling="no"></iframe></div></div>`);
+  const shot = $('#shot'), inner = $('#inner'), f = $('#f');
+  const sc = Math.min(1, (shot.clientWidth) / CS.w);
+  f.width = CS.w; f.height = CS.h; inner.style.transform = `scale(${sc})`; shot.style.height = CS.h * sc + 'px';
+  await new Promise(r => { f.onload = r; f.src = CS.src; });
+  const d = f.contentDocument;
+  for (const [n, s] of CS.areas) {
+    const el = d.querySelector(s); if (!el) continue; const r = el.getBoundingClientRect();
+    const box = document.createElement('div'); box.className = 'box';
+    Object.assign(box.style, {left: r.left - 3 + 'px', top: r.top - 3 + 'px', width: r.width + 6 + 'px', height: Math.min(r.height, CS.h - r.top - 6) + 6 + 'px'});
+    const b = document.createElement('div'); b.className = 'n'; b.textContent = n;
+    Object.assign(b.style, {left: Math.max(r.left - 10, 18 / sc) + 'px', top: Math.max(r.top - 6, 18 / sc) + 'px', transform: `translate(-50%,-50%) scale(${1 / Math.max(sc, .45)})`});
+    inner.append(box, b);
+  }
+  $('#csn').innerHTML = CS.areas.map(([n]) => `<button data-v="${n}">${n}</button>`).join('');
+  for (const [id, q, w, m] of shuffle(CSQ)) {
+    $('#csq').textContent = q;
+    const a = +(await choose('#csn button'));
+    R.cardsort.push({q: id, answer: a, hit: a === (P === 'web' ? w : m) ? 1 : 0});
+  }
+}
+
+/* ---------- 2. Тест дерева ---------- */
+const TT = [
+  ['J1', 'Вы хотите вернуть платье, купленное неделю назад', 'Профиль/Возврат и обмен/Оформить возврат', 'Профиль/Возврат и обмен/Оформить возврат'],
+  ['J2', 'Узнайте, сколько дней даётся на возврат товара', 'Справка/Возврат и обмен: правила и сроки', 'Профиль/Справка/Возврат и обмен: правила и сроки'],
+  ['J3', 'Найдите женские зимние сапоги', 'Каталог/Женское/Обувь/Сапоги', 'Главная/Каталог/Женское/Обувь/Сапоги'],
+  ['J6', 'Найдите одежду белорусских производителей', 'Каталог/Сделано в Беларуси', 'Главная/Каталог/Сделано в Беларуси']];
+function parseTree(txt) {
+  const root = {kids: []}, st = [[-1, root]];
+  for (const line of txt.split('\n').slice(1)) {
+    if (!line.trim()) continue;
+    const lvl = line.match(/^\t*/)[0].length, n = {name: line.trim(), kids: []};
+    while (st.at(-1)[0] >= lvl) st.pop();
+    st.at(-1)[1].kids.push(n); st.push([lvl, n]);
+  }
+  return root.kids;
+}
+async function tree() {
+  step(2);
+  const t = parseTree(await (await fetch(`tree-${P}.txt`)).text());
+  for (const [i, [id, text, rw, rm]] of shuffle(TT).entries()) {
+    html(`<div class="card"><p class="muted">Задание ${i + 1} из ${TT.length}. Нажимайте на разделы, чтобы открыть их. Когда найдёте нужное место — «Я бы искал(а) здесь».</p><p class="q">${text}</p></div>
+    <div class="card"><ul class="tree" id="tr"></ul></div><button class="btn sec" id="skip">Не знаю, пропустить</button>`);
+    const t0 = now(); let last = '', back = 0; const path = [];
+    const answer = await new Promise(res => {
+      const render = (nodes, ul, pp) => {
+        for (const n of nodes) {
+          const li = document.createElement('li'), p = pp ? pp + '/' + n.name : n.name, b = document.createElement('button');
+          b.className = 'node'; b.innerHTML = `<span class="ch">${n.kids.length ? '›' : ''}</span>${n.name}`;
+          b.onclick = () => {
+            if (last && !p.startsWith(last + '/')) back++;
+            last = p; path.push(n.name);
+            app.querySelectorAll('.pick').forEach(x => x.remove()); app.querySelectorAll('.node.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+            const open = li.querySelector(':scope > ul');
+            if (n.kids.length) {
+              if (open) return open.remove();
+              li.parentElement.querySelectorAll(':scope > li > ul').forEach(u => u.remove());
+              const u = document.createElement('ul'); render(n.kids, u, p); li.append(u);
+            } else {
+              const k = document.createElement('button'); k.className = 'pick'; k.textContent = 'Я бы искал(а) здесь'; k.onclick = () => res(p); b.after(k);
+            }
+          };
+          li.append(b); ul.append(li);
+        }
+      };
+      render(t, $('#tr'), ''); $('#skip').onclick = () => res('');
+    });
+    const ok = answer === (P === 'web' ? rw : rm);
+    R.tree.push({task: id, success: ok ? 1 : 0, direct: ok && !back ? 1 : 0, time: +((now() - t0) / 1000).toFixed(1), answer: answer || 'пропуск', path: path.join(' > ')});
+  }
+}
+
+/* ---------- 3. Тест ожиданий ---------- */
+const EX = [ // элемент, вопрос, варианты (первый — реализованное поведение)
+  ['E1', 'На карточке товара есть кнопка «Подобрать размер». Что произойдёт, если её нажать?', ['Откроется окно: введу рост и обхват — и мне подскажут размер', 'Откроется таблица размеров бренда', 'Меня попросят заполнить профиль', 'Начнётся чат с продавцом']],
+  ['E2', 'На карточке есть метка «Маломерит · 58%». Что она означает?', ['58% покупателей в отзывах отметили, что модель маломерит', 'Скидка 58% на маленькие размеры', 'Осталось 58% маленьких размеров', 'Вероятность, что размер подойдёт, — 58%']],
+  ['E3', 'На товаре метка «Сделано в Беларуси». Что это значит?', ['Вещь белорусского производителя; по этой метке можно отфильтровать каталог', 'Товар хранится на складе в Беларуси и быстро приедет', 'Доставка только по Беларуси', 'Товар продаётся только белорусам']],
+  ['E4', 'В корзине написано «Срок возврата · 14 дней». Что это значит?', ['Столько дней после получения можно вернуть вещь', 'Столько дней будет идти доставка', 'Через 14 дней заказ отменится, если его не забрать', 'Деньги за возврат придут через 14 дней']],
+  ['E5', 'На карточке товара есть значок ♡. Что произойдёт, если его нажать?', ['Товар добавится в «Избранное», я останусь на этой же странице', 'Я поставлю товару лайк, и это увидит продавец', 'Товар добавится в корзину', 'Откроется страница «Избранное»']]];
+async function expect() {
+  step(3);
+  for (const [i, [id, q, opts]] of EX.entries()) {
+    html(`<div class="card"><p class="muted">Вопрос ${i + 1} из ${EX.length}. Выберите вариант, который кажется вам правильным.</p><p class="q">${q}</p>
+    <div class="opts col">${shuffle(opts.map((o, k) => [o, k])).map(([o, k]) => `<button data-v="${k}">${o}</button>`).join('')}</div></div>`);
+    const k = +(await choose('.opts button'));
+    R.expect.push({e: id, answer: k, hit: k === 0 ? 1 : 0});
+  }
+}
+
+/* ---------- 4. Задания в прототипе: успех определяется автоматически ---------- */
+const TK = [
+  ['T1', 'Войдите в магазин. Почта и пароль уже введены.', {web: 'catalog.html', mobile: 'prototype-home.html'}, 1],
+  ['T2', 'Найдите джинсы клёш DENIM.BY и откройте их страницу.', {web: 'web-product.html', mobile: 'prototype-product.html'}, 1],
+  ['T3', 'Ваш рост 168 см, обхват бёдер 96 см. Узнайте, какой размер джинсов вам подойдёт, и выберите его.', 'size', 0],
+  ['T4', 'Узнайте, сколько дней у вас будет на возврат, не оформляя заказ.', 'ret', 0],
+  ['T5', 'Оформите заказ: самовывоз с ул. Немига, 5, оплата картой онлайн.', {web: 'web-done.html', mobile: 'prototype-done.html'}, 2]];
+async function tasks() {
+  step(4);
+  html(`<div class="card"><h2>Задания</h2><p>Сейчас откроется магазин. Сверху будет задание — выполните его в магазине. Как только справитесь, следующее задание появится само. Если не получается — «Пропустить».</p><button class="btn" id="go">Начать</button></div>`);
+  await new Promise(r => $('#go').onclick = r);
+  html(`<div class="task"><div><span class="muted" id="tn"></span><div class="q" id="tt" style="margin:0"></div><div id="extra"></div></div><button class="btn sec" id="skip">Пропустить</button></div>
+  <iframe class="proto" id="pf" style="${P === 'mobile' && innerWidth > 700 ? 'max-width:400px;margin:0 auto' : ''}"></iframe>`);
+  const pf = $('#pf'); let loads = 0, sizeOk = false, onLoad = () => {};
+  pf.onload = () => {
+    loads++;
+    const d = pf.contentDocument;
+    if (P === 'mobile') d.querySelector('#assistant .btn')?.addEventListener('click', () => sizeOk = true);
+    d.querySelectorAll('a[href="#"]').forEach(a => a.addEventListener('click', e => { if (!a.closest('#assistant') && !a.classList.contains('close')) e.preventDefault(); }));
+    onLoad();
+  };
+  pf.src = M + (P === 'web' ? 'web-login.html' : 'prototype-login.html');
+  await new Promise(r => { const f = pf.onload; pf.onload = () => { f(); r(); }; });
+  const page = () => pf.contentWindow.location.pathname.split('/').pop();
+  let ctrl0;
+  for (const [i, [id, text, goal, minLoads]] of TK.entries()) {
+    $('#tn').textContent = `Задание ${i + 1} из ${TK.length}`; $('#tt').textContent = text; $('#extra').innerHTML = '';
+    if (id === 'T2') ctrl0 = now();
+    const t0 = now(), l0 = loads; let done = null;
+    if (goal === 'ret') $('#extra').innerHTML = `<div style="margin-top:8px">Ответ: <input type="number" id="days" min="0"/> дней <button class="btn" id="ok" style="min-height:40px;padding:8px 14px">Ответить</button></div>`;
+    sizeOk = false;
+    const res = await new Promise(resolve => {
+      const check = () => {
+        if (typeof goal === 'object' && page() === goal[P]) resolve(1);
+        if (goal === 'size') {
+          if (P === 'web' && [...pf.contentDocument.querySelectorAll('.szl button.on')].some(b => b.textContent.trim() === '46')) resolve(1);
+          if (P === 'mobile' && sizeOk) resolve(1);
+        }
+        if ((now() - t0) > 180000) resolve(0); // лимит 3 минуты
+      };
+      const iv = setInterval(check, 300); onLoad = check;
+      $('#skip').onclick = () => resolve(0);
+      if (goal === 'ret') $('#ok').onclick = () => resolve(+$('#days').value === 14 ? 1 : 0);
+      done = () => clearInterval(iv);
+      const orig = resolve; resolve = v => { clearInterval(iv); orig(v); };
+    });
+    done();
+    R.tasks.push({task: id, success: res, time: +((now() - t0) / 1000).toFixed(1), errors: Math.max(0, loads - l0 - minLoads)});
+    if (id === 'T5') R.ctrl = {success: R.tasks.slice(1).every(t => t.success) ? 1 : 0, time: +((now() - ctrl0) / 1000).toFixed(1)};
+    if (res === 0 && typeof goal === 'object') pf.src = M + goal[P]; // показать нужный экран и продолжить
+    if (res === 0 && goal === 'size' && P === 'web') await sleep(100);
+    await sleep(400);
+  }
+}
+
+/* ---------- 5. SUS ---------- */
+const SUS = ['Я хотел(а) бы пользоваться этим магазином часто', 'Магазин показался мне излишне сложным', 'Магазином было легко пользоваться', 'Мне понадобилась бы помощь, чтобы им пользоваться', 'Функции магазина хорошо связаны между собой', 'В магазине слишком много несогласованности', 'Большинство людей быстро научатся им пользоваться', 'Пользоваться магазином очень неудобно', 'Я чувствовал(а) себя уверенно', 'Мне пришлось многому научиться, прежде чем начать'];
+async function sus() {
+  step(5);
+  html(`<div class="card"><h2>Последний шаг: ваша оценка</h2><div class="scale"><span>1 — совсем не согласен(на)</span><span>5 — полностью согласен(на)</span></div>
+  <div class="sus">${SUS.map((s, i) => `<div>${s}</div><div class="opts" data-i="${i}">${[1, 2, 3, 4, 5].map(v => `<button data-v="${v}">${v}</button>`).join('')}</div>`).join('')}</div>
+  <p><button class="btn" id="send" disabled>Отправить</button></p></div>`);
+  R.sus = Array(10).fill(0);
+  app.querySelectorAll('.sus .opts button').forEach(b => b.onclick = () => {
+    const row = b.parentElement; row.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    R.sus[+row.dataset.i] = +b.dataset.v; $('#send').disabled = R.sus.includes(0);
+  });
+  await new Promise(r => $('#send').onclick = r);
+}
+
+/* ---------- Отправка ---------- */
+async function send() {
+  R.finished = new Date().toISOString();
+  const data = JSON.stringify(R);
+  try { localStorage.setItem('lr6-' + R.id, data); } catch (e) {}
+  let ok = false;
+  if (FORM.action) {
+    try {
+      await fetch(FORM.action, {method: 'POST', mode: 'no-cors', body: new URLSearchParams({[FORM.field]: data})});
+      ok = true;
+    } catch (e) {}
+  }
+  html(`<div class="card"><h1>Спасибо!</h1><p>${ok ? 'Ответы отправлены. Страницу можно закрыть.' : 'Не получилось отправить автоматически. Скопируйте текст ниже и пришлите его тому, кто дал ссылку.'}</p>
+  ${ok ? '' : `<textarea style="width:100%;height:200px">${data.replace(/</g, '&lt;')}</textarea>`}</div>`);
+  $('#step').textContent = 'Готово';
+}
+
+(async () => { await intro(); await cardsort(); await tree(); await expect(); await tasks(); await sus(); await send(); })();
+</script>
+</body></html>
