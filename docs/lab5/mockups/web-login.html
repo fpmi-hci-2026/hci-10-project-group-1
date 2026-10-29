@@ -1,0 +1,28 @@
+<!doctype html><html lang="ru" data-mode="light"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Вход — МаркетШоп.by</title>
+<link rel="stylesheet" href="web.css"/>
+<style>body{display:flex;flex-direction:column;min-height:100vh}
+.login{margin:auto;width:440px;padding:48px 0}
+.logo.big{display:block;text-align:center;font-size:30px;color:var(--brand);margin-bottom:24px}
+.logo.big i{color:var(--accent)}
+.sub{margin:4px 0 24px}
+.remember{display:flex;align-items:center;gap:10px;min-height:44px;margin:-4px 0 12px;font-size:15px}
+.remember input{width:18px;height:18px;accent-color:var(--accent)}
+.row{display:flex;justify-content:space-between;margin-top:18px;font-size:15px}</style></head>
+<body>
+<main class="login">
+  <a class="logo big" href="#">МаркетШоп<i>.by</i></a>
+  <form class="panel" action="catalog.html">
+    <h1>Вход</h1>
+    <p class="muted sub">Войдите, чтобы видеть подборку под ваш размер и стиль</p>
+    <div class="fld"><label for="email">Электронная почта</label>
+      <input id="email" type="email" autocomplete="email" value="anastasiya@example.by"/></div>
+    <div class="fld"><label for="pwd">Пароль</label>
+      <input id="pwd" type="password" autocomplete="current-password" value="marketshop"/></div>
+    <label class="remember"><input type="checkbox" checked/> Запомнить меня</label>
+    <button class="btn" type="submit">Войти</button>
+    <div class="row"><a class="lnk" href="#">Забыли пароль?</a><a class="lnk" href="#">Зарегистрироваться</a></div>
+  </form>
+</main>
+</body></html>
