@@ -26,9 +26,9 @@ if S:
         tm = [float(r['time_s']) for r in rs if r['success'] == '1']
         out.append(f"| {pl} | {t} | {x}/{n} ({x/n:.0%}) | {lo:.0%}–{hi:.0%} | {st.median(tm):.0f} | {st.mean(int(r['errors']) for r in rs):.1f} |" if tm else
                    f"| {pl} | {t} | {x}/{n} | {lo:.0%}–{hi:.0%} | — | {st.mean(int(r['errors']) for r in rs):.1f} |")
-    # критерий: контрольное задание T5 за 180 с не менее чем у 75% участников
+    # критерий: контрольное прохождение T2→T5 (строки CTRL) за 180 с не менее чем у 75% участников
     for pl in sorted({r['platform'] for r in S}):
-        c = [r for r in S if r['platform'] == pl and r['task'] == 'T5']
+        c = [r for r in S if r['platform'] == pl and r['task'] == 'CTRL']
         if c:
             ok = sum(1 for r in c if r['success'] == '1' and float(r['time_s']) <= 180)
             out.append(f"\nКонтрольное задание, {pl}: {ok} из {len(c)} ({ok/len(c):.0%}) за 180 с — критерий {'выполнен' if ok/len(c) >= .75 else 'не выполнен'}.")
@@ -47,4 +47,9 @@ for name, col, title in (('cardsort.csv', 'question', 'Вопрос'), ('expecta
     for r in R: g[(r['platform'], r[col])].append(r[key] == '1')
     for (pl, k), v in sorted(g.items()):
         out.append(f'| {pl} | {k} | {sum(v)}/{len(v)} ({sum(v)/len(v):.0%}) |')
+J = rows('treejack.csv')
+if J:
+    out.append('\n| Платформа | Задание | Успех, % | Прямота, % | Время, с (медиана) |\n|---|---|---|---|---|')
+    for r in J:
+        out.append(f"| {r['platform']} | {r['task']} | {r['success_pct']} | {r['directness_pct']} | {r['median_time_s']} |")
 print('\n'.join(out) if out else 'Данных пока нет: заполните файлы в data/.')
