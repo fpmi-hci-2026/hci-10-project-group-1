@@ -61,6 +61,11 @@ cd frontend && npm ci && npm run dev
 
 ## Usage
 
+Развёрнутое приложение: веб — https://marketshop-five.vercel.app, API и Swagger UI — https://marketshop-gateway.onrender.com/swagger-ui.html
+(бесплатные сервисы Render засыпают без запросов, первый ответ — около минуты).
+
+Локальный запуск:
+
 | Что | Адрес |
 |-----|-------|
 | Веб-приложение | http://localhost:5173 |
