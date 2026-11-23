@@ -15,9 +15,6 @@
 <p class="tp-right">Харченко Анастасия</p>
 <p class="tp-right">Шепко Варвара</p>
 <p class="tp-right">Степук Анастасия</p>
-<div class="sp-s"></div>
-<p class="tp-right">Проверила: старший преподаватель кафедры ТП</p>
-<p class="tp-right">Давидовская М. И.</p>
 <div class="sp-m"></div>
 <p>Минск, 2026</p>
 </div>
