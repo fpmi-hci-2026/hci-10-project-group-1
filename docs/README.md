@@ -14,6 +14,7 @@
 | 5 | Проектирование прототипа приложения | [lab5/README.md](lab5/README.md) · [PDF](ЛабРабота5_ПЧМИ.pdf) · [DOCX](ЛабРабота5_ПЧМИ.docx) | Markdown, PDF, DOCX |
 | 6 | Тестирование и оценка качества прототипа приложения | [lab6/README.md](lab6/README.md) · [PDF](ЛабРабота6_ПЧМИ.pdf) · [DOCX](ЛабРабота6_ПЧМИ.docx) | Markdown, PDF, DOCX |
 | 7 | Разработка API и серверной части приложения | [lab7/README.md](lab7/README.md) · [PDF](ЛабРабота7_ПЧМИ.pdf) · [DOCX](ЛабРабота7_ПЧМИ.docx) | Markdown, PDF, DOCX |
+| 8 | Проектирование и вёрстка мобильного и веб-приложения | [lab8/README.md](lab8/README.md) · [PDF](ЛабРабота8_ПЧМИ.pdf) · [DOCX](ЛабРабота8_ПЧМИ.docx) | Markdown, PDF, DOCX |
 
 ## Содержание отчёта по ЛР№3
 
