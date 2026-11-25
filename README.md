@@ -85,6 +85,7 @@ cd frontend && npm ci && npm run dev
 | Посмотреть дизайн и прототипы | [Отчёт по ЛР№5](docs/lab5/README.md) |
 | Узнать результаты тестирования прототипов | [Отчёт по ЛР№6](docs/lab6/README.md) |
 | Разобраться в реализации | [Отчёт по ЛР№7](docs/lab7/README.md) |
+| Посмотреть веб- и мобильное приложение, MCP-сервер | [Отчёт по ЛР№8](docs/lab8/README.md) |
 | Посмотреть все отчёты | [docs/](docs/) · [Вики проекта](../../wiki) · [GitHub Pages](https://fpmi-hci-2026.github.io/hci-10-project-group-1/) |
 
 ### Структура репозитория
